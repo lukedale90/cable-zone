@@ -1,5 +1,5 @@
-import React, { useState, type ReactNode } from 'react';
-import { ParametersContext } from './ParametersContext';
+import React, { useState, type ReactNode } from "react";
+import { ParametersContext } from "./ParametersContext";
 
 export interface ParametersProviderProps {
   children: ReactNode;
@@ -22,25 +22,40 @@ export interface Parameters {
 export interface ParametersContextType {
   parameters: Parameters;
   setParameters: React.Dispatch<React.SetStateAction<Parameters>>;
+  resetStropParameters: () => void;
 }
 
-export const ParametersProvider: React.FC<ParametersProviderProps> = ({ children }) => {
+const defaultParameters = {
+  viewLocation: { lat: 53.0425, lng: -0.496 }, // Default location
+  winchLocation: { lat: 53.040309945932215, lng: -0.5006074905395509 },
+  launchPoint: { lat: 53.0443, lng: -0.485 },
+  surfaceWind: { speed: 18, direction: 280 },
+  twoThousandFtWind: { speed: 30, direction: 310 },
+  releaseHeight: 1800,
+  cableLength: 1100,
+  cableWeight: 0.5, //not used
+};
+
+const defaultStrop = {
+  stropLength: 3,
+  stropDiameter: 0.03,
+  stropWeight: 1.5,
+};
+
+export const ParametersProvider: React.FC<ParametersProviderProps> = ({
+  children,
+}) => {
   const [parameters, setParameters] = useState<Parameters>({
-    viewLocation: { lat: 53.0425, lng: -0.496 }, // Default location
-    winchLocation: { lat: 53.040309945932215, lng: -0.5006074905395509 },
-    launchPoint: { lat: 53.0443, lng: -0.485 },
-    cableLength: 1100, // in meters
-    stropWeight: 1.5, // in kilograms
-    stropLength: 3, // in meters
-    stropDiameter: 0.005, // in meters
-    cableWeight: 50, // in kilograms
-    releaseHeight: 2000, // in feet
-    surfaceWind: { speed: 18, direction: 280 }, // speed in knots, direction in degrees
-    twoThousandFtWind: { speed: 30, direction: 310 }, // speed in knots, direction in degrees
+    ...defaultParameters,
+    ...defaultStrop,
   });
 
+  const resetStropParameters = () => {
+    setParameters((prev) => ({ ...prev, ...defaultStrop }));
+  };
+
   return (
-    <ParametersContext.Provider value={{ parameters, setParameters }}>
+    <ParametersContext.Provider value={{ parameters, setParameters, resetStropParameters }}>
       {children}
     </ParametersContext.Provider>
   );

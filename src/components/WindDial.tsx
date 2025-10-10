@@ -1,4 +1,4 @@
-import { Chip, Stack } from "@mui/material";
+import { Chip, Stack, Typography } from "@mui/material";
 import React from "react";
 
 interface WindDialContainerProps {
@@ -56,19 +56,20 @@ const WindDialContainer: React.FC<WindDialContainerProps> = ({
         top: "10px",
         right: "10px",
         zIndex: 1000,
-        backgroundColor: "#ffffffc0",
-        padding: "10px",
-        borderRadius: "10px",
+        backgroundColor: "#ffffff94",
+        padding: "5px",
+        borderRadius: "20px",
         alignItems: "center",
       }}>
-      <div style={{ position: "relative", padding: "10px" }}>
-        <div style={{ position: "absolute" }}>
+      <div style={{ position: "relative", padding: "5px", height: "120px" }}>
+        <Typography variant="subtitle1" align="center">Wind</Typography>
+        <div style={{ position: "absolute", left: 0, right: 0, textAlign: "center" }}>
           <WindDial
             direction={surfaceDirection}
             color="blue"
           />
         </div>
-        <div>
+        <div style={{ position: "absolute", left: 0, right: 0, textAlign: "center" }}>
           <WindDial
             direction={twoKDirection}
             color="red"

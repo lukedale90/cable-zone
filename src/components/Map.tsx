@@ -5,6 +5,7 @@ import {
   Marker,
   Polyline,
   Polygon,
+  useMap,
 } from "react-leaflet";
 import L, { LatLngExpression } from "leaflet";
 import { useParameters } from "../context/ParametersContext";
@@ -20,13 +21,46 @@ import {
 } from "../utils/calculate-drift-coordinates";
 import WindDialContainer from "./WindDial";
 
+const UpdateMapView = ({ center }: { center: LatLngExpression }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    // Ensure the map is ready before updating the view
+    map.whenReady(() => {
+      const currentCenter = map.getCenter();
+
+      // Extract latitude and longitude from the center
+      const [lat, lng] = Array.isArray(center)
+        ? center
+        : [center.lat, center.lng];
+
+      // Update the map view only if the center has changed
+      if (currentCenter.lat !== lat || currentCenter.lng !== lng) {
+        console.log("Updating map center to:", center);
+        map.setView(center);
+      } else {
+        console.log("Map center is already set to:", center);
+      }
+    });
+  }, [center, map]);
+
+  return null;
+};
+
 const Map = () => {
   const { parameters, setParameters } = useParameters();
+  const [view, setView] = React.useState<LatLngExpression>([
+    parameters.viewLocation.lat,
+    parameters.viewLocation.lng,
+  ]);
   const [driftCoordinates, setDriftCoordinates] = React.useState<
     { lat: number; lng: number }[]
   >([]);
   const [driftCoordinates2, setDriftCoordinates2] = React.useState<
-    { start: { lat: number; lng: number }; drift: { lat: number; lng: number } }[]
+    {
+      start: { lat: number; lng: number };
+      drift: { lat: number; lng: number };
+    }[]
   >([]);
   // Create a custom yellow circle icon
   const winchIcon = L.divIcon({
@@ -69,9 +103,9 @@ const Map = () => {
     );
 
     const stropDrift = calculateStropDrift(
-      // parameters.stropWeight,
-      // parameters.stropDiameter,
-      // parameters.stropLength,
+      parameters.stropWeight,
+      parameters.stropDiameter,
+      parameters.stropLength,
       stropHeights,
       windGradient
     );
@@ -97,7 +131,7 @@ const Map = () => {
       const { driftX, driftY } = stropDrift[index];
       const drift = calculateDriftCoordinates(lat, lng, driftX, driftY);
 
-      return { start: {lat, lng}, drift };
+      return { start: { lat, lng }, drift };
     });
 
     setDriftCoordinates(driftCoordinates);
@@ -114,15 +148,37 @@ const Map = () => {
     parameters.releaseHeight,
     parameters.surfaceWind,
     parameters.twoThousandFtWind,
+    parameters.stropWeight,
+    parameters.stropDiameter,
+    parameters.stropLength,
     setParameters,
   ]);
 
+  useEffect(() => {
+    setView([parameters.viewLocation.lat, parameters.viewLocation.lng]);
+
+    //update winch and launch point if view location changes
+    setParameters((prev) => ({
+      ...prev,
+      winchLocation: {
+        lat: parameters.viewLocation.lat - 0.0022,
+        lng: parameters.viewLocation.lng - 0.0045,
+      },
+      launchPoint: {
+        lat: parameters.viewLocation.lat + 0.0018,
+        lng: parameters.viewLocation.lng + 0.011,
+      },
+    }));
+
+  }, [parameters.viewLocation, setParameters]);
+
   return (
-    <div style={{ position: "relative", height: "100vh", width: "100%" }}>
+    <div style={{ position: "relative", height: "100%", width: "100%" }}>
       <MapContainer
-        center={[parameters.viewLocation.lat, parameters.viewLocation.lng]}
+        center={view}
         zoom={16}
         style={{ height: "100%", width: "100%" }}>
+        <UpdateMapView center={view} />
         <TileLayer
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           attribution="&copy; <a href='https://www.esri.com/'>Esri</a> contributors"
@@ -155,6 +211,32 @@ const Map = () => {
             },
           }}
         />
+        {/* Launch Point label */}
+        <Marker
+          position={parameters.launchPoint}
+          icon={L.divIcon({
+            className: "",
+            html: `<div style="background:rgba(255, 0, 0, 0.47);padding:2px 8px;border-radius:4px;border:1px solid #d21919ff;font-size:12px;color:#fff;white-space:nowrap;">
+              Launch Point
+            </div>`,
+            iconSize: [90, 24],
+            iconAnchor: [45, 40], // place label above marker
+          })}
+          interactive={false}
+        />
+        {/* Winch  label */}
+        <Marker
+          position={parameters.winchLocation}
+          icon={L.divIcon({
+            className: "",
+            html: `<div style="text-align: center; background:rgba(255, 238, 0, 0.54);padding:2px 8px;border-radius:4px;border:1px solid #fbf300ff;font-size:12px;color:#000;white-space:nowrap;">
+              Winch
+            </div>`,
+            iconSize: [60, 24],
+            iconAnchor: [30, 40], // place label above marker
+          })}
+          interactive={false}
+        />
         <Polyline
           positions={[
             [parameters.winchLocation.lat, parameters.winchLocation.lng],
@@ -162,6 +244,42 @@ const Map = () => {
           ]}
           pathOptions={{ color: "blue", weight: 2 }}
         />
+        {/* Heading label */}
+        {(() => {
+          // Calculate heading in degrees from launch to winch
+          const toRad = (deg: number) => (deg * Math.PI) / 180;
+          const toDeg = (rad: number) => (rad * 180) / Math.PI;
+          const { winchLocation, launchPoint } = parameters;
+          const dLon = toRad(winchLocation.lng - launchPoint.lng);
+          const lat1 = toRad(launchPoint.lat);
+          const lat2 = toRad(winchLocation.lat);
+          const y = Math.sin(dLon) * Math.cos(lat2);
+          const x =
+            Math.cos(lat1) * Math.sin(lat2) -
+            Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+          let brng = Math.atan2(y, x);
+          brng = (toDeg(brng) + 360) % 360;
+          // Midpoint for label
+          const midLat = (winchLocation.lat + launchPoint.lat) / 2;
+          const midLng = (winchLocation.lng + launchPoint.lng) / 2;
+
+          const boxHeading = brng < 180 ? brng + 270 : brng + 90; // Invert if heading is less than 180
+
+          return (
+            <Marker
+              position={{ lat: midLat, lng: midLng }}
+              icon={L.divIcon({
+                className: "",
+                html: `<div style="background:rgba(255,255,255,0.8);padding:2px 6px;border-radius:4px;border:1px solid #1976d2;font-size:12px;color:#1976d2; transform: rotate(${boxHeading}deg); white-space:nowrap;">
+                ${brng.toFixed(0).padStart(3, "0")}° ${parameters.cableLength}m
+              </div>`,
+                iconSize: [80, 24],
+                iconAnchor: [40, 12],
+              })}
+              interactive={false}
+            />
+          );
+        })()}
         <Polyline
           positions={driftCoordinates.map((coord) => [coord.lat, coord.lng])}
           pathOptions={{ color: "red", weight: 2, dashArray: "5, 10" }}
@@ -173,16 +291,34 @@ const Map = () => {
               [item.start.lat, item.start.lng],
               [item.drift.lat, item.drift.lng],
             ]}
-            pathOptions={{ color: "red", weight: 1, dashArray: "2, 6" }}
+            pathOptions={{
+              color: "#ffffff80",
+              weight: 1,
+              dashArray: "2, 6",
+              // Animate dashes using CSS class
+              className: "animated-dash",
+            }}
           />
         ))}
         <Polygon
           positions={[
-            [parameters.winchLocation.lat, parameters.winchLocation.lng] as LatLngExpression,
-            [parameters.launchPoint.lat, parameters.launchPoint.lng] as LatLngExpression,
-            ...driftCoordinates.map((coord) => [coord.lat, coord.lng] as LatLngExpression),
+            [
+              parameters.winchLocation.lat,
+              parameters.winchLocation.lng,
+            ] as LatLngExpression,
+            [
+              parameters.launchPoint.lat,
+              parameters.launchPoint.lng,
+            ] as LatLngExpression,
+            ...driftCoordinates.map(
+              (coord) => [coord.lat, coord.lng] as LatLngExpression
+            ),
           ]}
-          pathOptions={{ color: "rgba(255, 0, 0, 0.3)", fillColor: "red", fillOpacity: 0.2 }}
+          pathOptions={{
+            color: "rgba(255, 0, 0, 0.3)",
+            fillColor: "red",
+            fillOpacity: 0.2,
+          }}
         />
       </MapContainer>
       <WindDialContainer

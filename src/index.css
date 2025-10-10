@@ -54,6 +54,16 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.leaflet-interactive.animated-dash {
+  stroke-dasharray: 2, 6;
+  animation: dashmove 2s linear infinite;
+}
+@keyframes dashmove {
+  to {
+    stroke-dashoffset: -8;
+  }
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
