@@ -69,9 +69,9 @@ const Map = () => {
     );
 
     const stropDrift = calculateStropDrift(
-      parameters.stropWeight,
-      parameters.stropDiameter,
-      parameters.stropLength,
+      // parameters.stropWeight,
+      // parameters.stropDiameter,
+      // parameters.stropLength,
       stropHeights,
       windGradient
     );

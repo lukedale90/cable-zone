@@ -1,4 +1,3 @@
-import React from "react";
 import { useParameters } from "../context/ParametersContext";
 import { Slider, Typography, Stack, Chip } from "@mui/material";
 

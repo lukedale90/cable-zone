@@ -28,18 +28,16 @@ export const ParametersProvider: React.FC<ParametersProviderProps> = ({ children
   const [parameters, setParameters] = useState<Parameters>({
     viewLocation: { lat: 53.0425, lng: -0.496 }, // Default location
     winchLocation: { lat: 53.040309945932215, lng: -0.5006074905395509 },
-    launchPoint: { lat: 53.045, lng: -0.486 },
-    cableLength: 1000, // in meters
+    launchPoint: { lat: 53.0443, lng: -0.485 },
+    cableLength: 1100, // in meters
     stropWeight: 1.5, // in kilograms
     stropLength: 3, // in meters
     stropDiameter: 0.005, // in meters
     cableWeight: 50, // in kilograms
     releaseHeight: 2000, // in feet
-    surfaceWind: { speed: 10, direction: 260 }, // speed in knots, direction in degrees
-    twoThousandFtWind: { speed: 20, direction: 290 }, // speed in knots, direction in degrees
+    surfaceWind: { speed: 18, direction: 280 }, // speed in knots, direction in degrees
+    twoThousandFtWind: { speed: 30, direction: 310 }, // speed in knots, direction in degrees
   });
-
-  console.log('ParametersProvider rendered');
 
   return (
     <ParametersContext.Provider value={{ parameters, setParameters }}>

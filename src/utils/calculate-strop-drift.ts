@@ -1,7 +1,7 @@
 export const calculateStropDrift = (
-  stropWeight: number, // in kilograms
-  stropDiameter: number, // in meters
-  stropLength: number, // in meters
+//   stropWeight: number, // in kilograms
+//   stropDiameter: number, // in meters
+//   stropLength: number, // in meters
   stropHeights: { distance: number; height: number }[], // Heights at each 10% interval (in feet)
   windData: { height: number; windSpeed: number; windDirection: number }[] // Wind data at each 10% interval
 ): { distance: number; driftX: number; driftY: number }[] => {
