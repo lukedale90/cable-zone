@@ -229,6 +229,32 @@ const SettingsPanel = () => {
           </Stack>
         </AccordionDetails>
       </Accordion>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Safety Parameters</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+            <Stack spacing={3}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center">
+                <Typography variant="caption">Safety Buffer</Typography>
+                <Chip label={`${(parameters.safetyBuffer ).toFixed(0)} %`} color="primary" />
+              </Stack>
+              <Slider
+                value={parameters.safetyBuffer }
+                onChange={(_, value) =>
+                  handleChange("safetyBuffer", (value as number))
+                }
+                min={1}
+                step={1}
+                max={100}
+                valueLabelDisplay="auto"
+              />
+            </Stack>
+        </AccordionDetails>
+        </Accordion>
       <Typography variant="subtitle1" align="center" sx={{ mt: 2 }}>
         Launch Profile
       </Typography>

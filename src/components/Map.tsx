@@ -36,11 +36,8 @@ const UpdateMapView = ({ center }: { center: LatLngExpression }) => {
 
       // Update the map view only if the center has changed
       if (currentCenter.lat !== lat || currentCenter.lng !== lng) {
-        console.log("Updating map center to:", center);
         map.setView(center);
-      } else {
-        console.log("Map center is already set to:", center);
-      }
+      } 
     });
   }, [center, map]);
 
@@ -61,6 +58,9 @@ const Map = () => {
       start: { lat: number; lng: number };
       drift: { lat: number; lng: number };
     }[]
+  >([]);
+  const [sausagePolygon, setSausagePolygon] = React.useState<
+    { lat: number; lng: number }[]
   >([]);
   // Create a custom yellow circle icon
   const winchIcon = L.divIcon({
@@ -107,7 +107,8 @@ const Map = () => {
       parameters.stropDiameter,
       parameters.stropLength,
       stropHeights,
-      windGradient
+      windGradient,
+      parameters.safetyBuffer
     );
 
     const intervalPositions = calculateIntervalPositions(
@@ -134,6 +135,46 @@ const Map = () => {
       return { start: { lat, lng }, drift };
     });
 
+    const sausageCoordinates = intervalPositions.map((position, index) => {
+      const { lat, lng } = position;
+      const { minDriftX, maxDriftX, minDriftY, maxDriftY } = stropDrift[index];
+      const minDrift = calculateDriftCoordinates(
+        lat,
+        lng,
+        minDriftX,
+        minDriftY
+      );
+      const maxDrift = calculateDriftCoordinates(
+        lat,
+        lng,
+        maxDriftX,
+        maxDriftY
+      );
+
+      return { min: minDrift, max: maxDrift };
+    });
+
+    const minValues = sausageCoordinates.map(
+      (coord: {
+        min: { lat: number; lng: number };
+        max: { lat: number; lng: number };
+      }) => coord.min
+    );
+    const maxValues = sausageCoordinates.map(
+      (coord: {
+        min: { lat: number; lng: number };
+        max: { lat: number; lng: number };
+      }) => coord.max
+    );
+
+    // Create the polygon by joining min values and reversed max values
+    const sausagePolygon = [
+      ...minValues,
+      ...maxValues.reverse(),
+      minValues[0], // Close the polygon by connecting back to the first min value
+    ];
+
+    setSausagePolygon(sausagePolygon);
     setDriftCoordinates(driftCoordinates);
     setDriftCoordinates2(driftCoordinates2);
 
@@ -151,6 +192,7 @@ const Map = () => {
     parameters.stropWeight,
     parameters.stropDiameter,
     parameters.stropLength,
+    parameters.safetyBuffer,
     setParameters,
   ]);
 
@@ -169,7 +211,6 @@ const Map = () => {
         lng: parameters.viewLocation.lng + 0.011,
       },
     }));
-
   }, [parameters.viewLocation, setParameters]);
 
   return (
@@ -280,9 +321,18 @@ const Map = () => {
             />
           );
         })()}
+
         <Polyline
           positions={driftCoordinates.map((coord) => [coord.lat, coord.lng])}
-          pathOptions={{ color: "red", weight: 2, dashArray: "5, 10" }}
+          pathOptions={{ color: "white", weight: 2, dashArray: "5, 10" }}
+        />
+        <Polygon
+          positions={sausagePolygon.map((coord) => [coord.lat, coord.lng])}
+          pathOptions={{
+            color: "transparent",
+            fillColor: "orange",
+            fillOpacity: 0.4, // Adjust opacity as needed
+          }}
         />
         {driftCoordinates2.map((item, index) => (
           <Polyline
@@ -300,6 +350,24 @@ const Map = () => {
             }}
           />
         ))}
+        <style>
+          {`
+            .leaflet-interactive.animated-dash {
+              stroke-dasharray: 2, 6;
+              animation: dashmove ${Math.max(
+                0.1,
+                2 - (parameters.surfaceWind.speed / 20) * 1.9
+              )}s linear infinite;
+              /* 0kts = 2s, 20kts+ = 0.1s, linear gradient in between */
+              /* Clamp to minimum 0.1s */
+            }
+            @keyframes dashmove {
+              to {
+                stroke-dashoffset: -8;
+              }
+            }
+          `}
+        </style>
         <Polygon
           positions={[
             [

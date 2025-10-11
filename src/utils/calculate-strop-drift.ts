@@ -1,12 +1,12 @@
 export const calculateTerminalVelocity = (
   stropWeight: number, // in kilograms
   stropDiameter: number, // in meters
-  stropLength: number, // in meters
+  stropLength: number // in meters
 ): number => {
   const g = 9.81; // Gravitational acceleration (m/s²)
   const airDensity = 1.225; // Air density at sea level (kg/m³)
   const dragCoefficient = 1.2; // Adjusted drag coefficient for a cylinder to better match real-world observations
-  
+
   // Calculate curved surface area (A = 2πrh)
   const radius = stropDiameter / 2;
   const fullSurfaceArea = 2 * Math.PI * radius * stropLength;
@@ -25,15 +25,17 @@ export const calculateStropDrift = (
   stropDiameter: number, // in meters
   stropLength: number, // in meters
   stropHeights: { distance: number; height: number }[], // Heights at each 10% interval (in feet)
-  windData: { height: number; windSpeed: number; windDirection: number }[] // Wind data at each 10% interval
-): { distance: number; driftX: number; driftY: number }[] => {
-  //   const g = 9.81; // Gravitational acceleration (m/s²)
-  //   const rho = 1.225; // Air density (kg/m³)
-  //   const Cd = 170.25; // Adjusted drag coefficient for a cylinder to better match real-world observations
-  //   const A = Math.PI * Math.pow(stropDiameter / 2, 2); // Cross-sectional area (m²)
-
-  // Calculate terminal velocity using curved surface area
-
+  windData: { height: number; windSpeed: number; windDirection: number }[], // Wind data at each 10% interval
+  safetyBuffer: number // in percentage (e.g., 0.1 for 10%)
+): {
+  distance: number;
+  driftX: number;
+  driftY: number;
+  minDriftX: number;
+  maxDriftX: number;
+  minDriftY: number;
+  maxDriftY: number;
+}[] => {
   const terminalVelocity = calculateTerminalVelocity(
     stropWeight,
     stropDiameter,
@@ -62,11 +64,25 @@ export const calculateStropDrift = (
     const driftX = windX * timeToFall;
     const driftY = windY * timeToFall;
 
+    // Calculate dynamic adjustment factors based on safetyBuffer
+    const minFactor = 100 - safetyBuffer; // Decrease by safetyBuffer percentage
+    const maxFactor = 100 + safetyBuffer; // Increase by safetyBuffer percentage
+
+    // Adjust min and max drift values dynamically
+    const minDriftX = driftX * (minFactor / 100);
+    const maxDriftX = driftX * (maxFactor / 100);
+    const minDriftY = driftY * (minFactor / 100);
+    const maxDriftY = driftY * (maxFactor / 100);
+
     // Return the distance and drift components
     return {
       distance: strop.distance,
       driftX,
       driftY,
+      minDriftX,
+      maxDriftX,
+      minDriftY,
+      maxDriftY,
     };
   });
 };

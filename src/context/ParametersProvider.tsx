@@ -14,6 +14,7 @@ export interface Parameters {
   stropLength: number;
   stropDiameter: number;
   cableWeight: number;
+  safetyBuffer: number;
   releaseHeight: number;
   surfaceWind: { speed: number; direction: number };
   twoThousandFtWind: { speed: number; direction: number };
@@ -33,6 +34,7 @@ const defaultParameters = {
   twoThousandFtWind: { speed: 30, direction: 310 },
   releaseHeight: 1800,
   cableLength: 1100,
+  safetyBuffer: 25, //as percentage
   cableWeight: 0.5, //not used
 };
 
@@ -55,7 +57,8 @@ export const ParametersProvider: React.FC<ParametersProviderProps> = ({
   };
 
   return (
-    <ParametersContext.Provider value={{ parameters, setParameters, resetStropParameters }}>
+    <ParametersContext.Provider
+      value={{ parameters, setParameters, resetStropParameters }}>
       {children}
     </ParametersContext.Provider>
   );

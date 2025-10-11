@@ -62,15 +62,23 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
             alt="Logo"
             style={{ height: "40px", marginRight: "10px" }}
           />
-          <Typography
-            variant={isSmallScreen ? "subtitle1" : "h6"}
-            sx={isSmallScreen ? { fontSize: "1rem" } : {}}
-          >
-            Strop Drop-Zone Visualiser
-          </Typography>
+          <Stack spacing={0} alignItems="flex-start">
+            <Typography variant={isSmallScreen ? "subtitle1" : "h6"}>
+              Strop-Drop
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={isSmallScreen ? { fontSize: "0.6rem" } : {}}>
+              The Drop-Zone Visualiser - V1.0
+            </Typography>
+          </Stack>
         </Stack>
         {isSmallScreen ? (
-          <Button variant="contained" color="warning" sx={{ ml: "auto" }} onClick={() => setShowSearchBar(!showSearchBar)}>
+          <Button
+            variant="contained"
+            color="warning"
+            sx={{ ml: "auto" }}
+            onClick={() => setShowSearchBar(!showSearchBar)}>
             <SearchIcon />
           </Button>
         ) : (
@@ -102,12 +110,12 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
         )}
       </Toolbar>
       {isSmallScreen && showSearchBar && (
-        <Stack direction="row" alignItems="center" sx={{ width: '100%', p: 1 }} >
+        <Stack direction="row" alignItems="center" sx={{ width: "100%", p: 1 }}>
           <TextField
             variant="outlined"
             size="small"
             placeholder="Enter location"
-            sx={{ backgroundColor: "white", borderRadius: 1, width: '100%' }}
+            sx={{ backgroundColor: "white", borderRadius: 1, width: "100%" }}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyUp={(e) => {
