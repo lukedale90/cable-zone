@@ -1,9 +1,5 @@
 import { useState } from "react";
-import {
-  Drawer,
-  useMediaQuery,
-  Button,
-} from "@mui/material";
+import { Drawer, useMediaQuery, Button } from "@mui/material";
 
 import CssBaseline from "@mui/material/CssBaseline";
 import Map from "./components/Map";
@@ -32,7 +28,6 @@ function App() {
       setDrawerOpen(open);
     };
 
-
   return (
     <ParametersProvider>
       <div
@@ -43,15 +38,12 @@ function App() {
           flexDirection: "column",
         }}>
         <CssBaseline />
-        <Header
-          isSmallScreen={isSmallScreen}
-          toggleDrawer={toggleDrawer}
-        />
+        <Header isSmallScreen={isSmallScreen} toggleDrawer={toggleDrawer} />
         <div style={{ flex: 1, display: "flex", maxHeight: "100vh" }}>
           {!isSmallScreen && (
             <div
               style={{
-                width: "400px",
+                width: "500px",
                 borderRight: "1px solid #ccc",
                 backgroundColor: "#ffffff",
                 height: "100%", // Ensure it fits the viewport
@@ -64,6 +56,9 @@ function App() {
             <Drawer
               anchor="left"
               open={drawerOpen}
+              sx={{
+                "& .MuiDrawer-paper": { maxWidth: "90vw", width: "100%" },
+              }} // Set max width
               onClose={toggleDrawer(false)}>
               <SettingsPanel />
               <Button onClick={toggleDrawer(false)}>Close</Button>

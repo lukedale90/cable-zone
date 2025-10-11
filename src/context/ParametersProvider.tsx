@@ -18,6 +18,7 @@ export interface Parameters {
   releaseHeight: number;
   surfaceWind: { speed: number; direction: number };
   twoThousandFtWind: { speed: number; direction: number };
+  customLaunchProfile: number[];
 }
 
 export interface ParametersContextType {
@@ -36,6 +37,7 @@ const defaultParameters = {
   cableLength: 1100,
   safetyBuffer: 25, //as percentage
   cableWeight: 0.5, //not used
+  customLaunchProfile: [],
 };
 
 const defaultStrop = {

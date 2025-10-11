@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { calculateTerminalVelocity } from "../utils/calculate-strop-drift";
-import LaunchProfileGraph from "./LaunchProfileGraph";
+import LaunchProfileControl from "./LaunchProfileControl";
 
 const SettingsPanel = () => {
   const { parameters, setParameters, resetStropParameters } = useParameters();
@@ -31,121 +31,116 @@ const SettingsPanel = () => {
 
   return (
     <Stack>
+      <Stack sx={{ p: 3 }} spacing={2}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center">
+          <Typography variant="caption">Release Height</Typography>
+          <Chip label={`${parameters.releaseHeight} ft`} color="primary" />
+        </Stack>
+        <Slider
+          value={parameters.releaseHeight}
+          onChange={(_, value) =>
+            handleChange("releaseHeight", value as number)
+          }
+          min={100}
+          max={3000}
+          step={100}
+          valueLabelDisplay="auto"
+        />
+        <LaunchProfileControl
+          activeWind={parameters.surfaceWind.speed}
+          maxHeight={parameters.releaseHeight}
+          maxCableLength={parameters.cableLength}
+        />
+      </Stack>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Wind Controls</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Stack spacing={2}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center">
-              <Typography variant="caption">Surface Wind Speed</Typography>
-              <Chip
-                label={`${parameters.surfaceWind.speed} kts`}
-                color="primary"
-              />
+            <Stack spacing={3} direction="row" justifyContent="space-between">
+              <Stack justifyContent="space-between" alignItems="center">
+                <Typography variant="caption">Surface Wind</Typography>
+                <Chip
+                  label={`${parameters.surfaceWind.direction
+                    .toString()
+                    .padStart(3, "0")}° ${parameters.surfaceWind.speed} kts`}
+                  color="primary"
+                />
+              </Stack>
+              <Stack flexGrow={1}>
+                <Slider
+                  value={parameters.surfaceWind.direction}
+                  onChange={(_, value) =>
+                    handleChange("surfaceWind", {
+                      ...parameters.surfaceWind,
+                      direction: value as number,
+                    })
+                  }
+                  min={5}
+                  max={360}
+                  step={5}
+                  valueLabelDisplay="auto"
+                />
+                <Slider
+                  value={parameters.surfaceWind.speed}
+                  onChange={(_, value) =>
+                    handleChange("surfaceWind", {
+                      ...parameters.surfaceWind,
+                      speed: value as number,
+                    })
+                  }
+                  min={0}
+                  max={50}
+                  valueLabelDisplay="auto"
+                />
+              </Stack>
             </Stack>
-            <Slider
-              value={parameters.surfaceWind.speed}
-              onChange={(_, value) =>
-                handleChange("surfaceWind", {
-                  ...parameters.surfaceWind,
-                  speed: value as number,
-                })
-              }
-              min={0}
-              max={50}
-              valueLabelDisplay="auto"
-            />
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center">
-              <Typography variant="caption">Surface Wind Direction</Typography>
-              <Chip
-                label={`${parameters.surfaceWind.direction}°`}
-                color="primary"
-              />
+            <Stack spacing={3} direction="row" justifyContent="space-between">
+              <Stack justifyContent="space-between" alignItems="center">
+                <Typography variant="caption">2000ft Wind</Typography>
+                <Chip
+                  label={`${parameters.twoThousandFtWind.direction
+                    .toString()
+                    .padStart(3, "0")}° ${
+                    parameters.twoThousandFtWind.speed
+                  } kts`}
+                  color="error"
+                />
+              </Stack>
+              <Stack flexGrow={1}>
+                <Slider
+                  color="error"
+                  value={parameters.twoThousandFtWind.direction}
+                  onChange={(_, value) =>
+                    handleChange("twoThousandFtWind", {
+                      ...parameters.twoThousandFtWind,
+                      direction: value as number,
+                    })
+                  }
+                  min={5}
+                  max={360}
+                  step={5}
+                  valueLabelDisplay="auto"
+                />
+                <Slider
+                  color="error"
+                  value={parameters.twoThousandFtWind.speed}
+                  onChange={(_, value) =>
+                    handleChange("twoThousandFtWind", {
+                      ...parameters.twoThousandFtWind,
+                      speed: value as number,
+                    })
+                  }
+                  min={0}
+                  max={50}
+                  valueLabelDisplay="auto"
+                />
+              </Stack>
             </Stack>
-            <Slider
-              value={parameters.surfaceWind.direction}
-              onChange={(_, value) =>
-                handleChange("surfaceWind", {
-                  ...parameters.surfaceWind,
-                  direction: value as number,
-                })
-              }
-              min={5}
-              max={360}
-              step={5}
-              valueLabelDisplay="auto"
-            />
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center">
-              <Typography variant="caption">2,000ft Wind Speed</Typography>
-              <Chip
-                label={`${parameters.twoThousandFtWind.speed} kts`}
-                color="primary"
-              />
-            </Stack>
-            <Slider
-              value={parameters.twoThousandFtWind.speed}
-              onChange={(_, value) =>
-                handleChange("twoThousandFtWind", {
-                  ...parameters.twoThousandFtWind,
-                  speed: value as number,
-                })
-              }
-              min={0}
-              max={50}
-              valueLabelDisplay="auto"
-            />
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center">
-              <Typography variant="caption">2,000ft Wind Direction</Typography>
-              <Chip
-                label={`${parameters.twoThousandFtWind.direction
-                  .toString()
-                  .padStart(3, "0")}°`}
-                color="primary"
-              />
-            </Stack>
-            <Slider
-              value={parameters.twoThousandFtWind.direction}
-              onChange={(_, value) =>
-                handleChange("twoThousandFtWind", {
-                  ...parameters.twoThousandFtWind,
-                  direction: value as number,
-                })
-              }
-              min={5}
-              max={360}
-              step={5}
-              valueLabelDisplay="auto"
-            />
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center">
-              <Typography variant="caption">Release Height</Typography>
-              <Chip label={`${parameters.releaseHeight} ft`} color="primary" />
-            </Stack>
-            <Slider
-              value={parameters.releaseHeight}
-              onChange={(_, value) =>
-                handleChange("releaseHeight", value as number)
-              }
-              min={100}
-              max={3000}
-              step={100}
-              valueLabelDisplay="auto"
-            />
           </Stack>
         </AccordionDetails>
       </Accordion>
@@ -234,37 +229,30 @@ const SettingsPanel = () => {
           <Typography>Safety Parameters</Typography>
         </AccordionSummary>
         <AccordionDetails>
-            <Stack spacing={3}>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center">
-                <Typography variant="caption">Safety Buffer</Typography>
-                <Chip label={`${(parameters.safetyBuffer ).toFixed(0)} %`} color="primary" />
-              </Stack>
-              <Slider
-                value={parameters.safetyBuffer }
-                onChange={(_, value) =>
-                  handleChange("safetyBuffer", (value as number))
-                }
-                min={1}
-                step={1}
-                max={100}
-                valueLabelDisplay="auto"
+          <Stack spacing={3}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center">
+              <Typography variant="caption">Safety Buffer</Typography>
+              <Chip
+                label={`${parameters.safetyBuffer.toFixed(0)} %`}
+                color="primary"
               />
             </Stack>
+            <Slider
+              value={parameters.safetyBuffer}
+              onChange={(_, value) =>
+                handleChange("safetyBuffer", value as number)
+              }
+              min={1}
+              step={1}
+              max={100}
+              valueLabelDisplay="auto"
+            />
+          </Stack>
         </AccordionDetails>
-        </Accordion>
-      <Typography variant="subtitle1" align="center" sx={{ mt: 2 }}>
-        Launch Profile
-      </Typography>
-      <Stack sx={{ p: 3 }}>
-        <LaunchProfileGraph
-          activeWind={parameters.surfaceWind.speed}
-          maxHeight={parameters.releaseHeight}
-          maxCableLength={parameters.cableLength}
-        />
-      </Stack>
+      </Accordion>
     </Stack>
   );
 };

@@ -42,9 +42,17 @@ export const calculateStropDrift = (
     stropLength
   );
 
-  return stropHeights.map((strop, index) => {
+  return stropHeights.map((strop) => {
     const heightInMeters = strop.height * 0.3048; // Convert height from feet to meters
-    const { windSpeed, windDirection } = windData[index];
+
+    // Find the closest height in windData
+    const closestWindData = windData.reduce((prev, curr) => {
+      return Math.abs(curr.height - strop.height) < Math.abs(prev.height - strop.height)
+        ? curr
+        : prev;
+    });
+
+    const { windSpeed, windDirection } = closestWindData;
 
     // Convert wind speed from knots to meters per second
     const windSpeedInMetersPerSecond = windSpeed * 0.51444;

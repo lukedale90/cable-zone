@@ -90,9 +90,11 @@ const Map = () => {
     const stropHeights = calculateStropHeights(
       distance,
       parameters.releaseHeight,
-      parameters.surfaceWind.speed
+      parameters.surfaceWind.speed,
+      parameters.customLaunchProfile
     );
-    console.log(stropHeights);
+
+    console.log('Custom Launch Profile:', parameters.customLaunchProfile);
 
     const windGradient = calculateWindGradient(
       parameters.surfaceWind.speed,
@@ -193,6 +195,7 @@ const Map = () => {
     parameters.stropDiameter,
     parameters.stropLength,
     parameters.safetyBuffer,
+    parameters.customLaunchProfile,
     setParameters,
   ]);
 
