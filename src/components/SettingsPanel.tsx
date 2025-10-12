@@ -8,6 +8,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   Button,
+  Alert,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { calculateTerminalVelocity } from "../utils/calculate-strop-drift";
@@ -54,6 +55,12 @@ const SettingsPanel = () => {
               step={100}
               valueLabelDisplay="auto"
             />
+            {parameters.releaseHeight > parameters.theroreticalMaxHeight && (
+              <Alert severity="warning">
+                Warning: The release height exceeds the theoretical maximum
+                based on the cable length and headwind component.
+              </Alert>
+            )}
             <LaunchProfileControl
               activeWind={parameters.surfaceWind.speed}
               maxHeight={parameters.releaseHeight}
@@ -260,6 +267,13 @@ const SettingsPanel = () => {
           </Stack>
         </AccordionDetails>
       </Accordion>
+            {/* Key for map */}
+
+      <Stack direction="row" spacing={1} sx={{ p: 2 }} alignItems={"center"}>
+        <Typography variant="caption">Map Key:</Typography>
+        <Chip label="Potential Strop Impact Area" color="warning" />
+        <Chip label="Area of Drift" color="error" />
+      </Stack>
     </Stack>
   );
 };

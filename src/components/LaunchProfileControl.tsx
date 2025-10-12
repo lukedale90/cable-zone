@@ -79,10 +79,7 @@ const LaunchProfileControl = ({
           Adjust the sliders to customise the launch profile. The profile will
           override preset profiles when in edit mode.
         </Alert>
-        <Typography variant="subtitle1">
-          Closest Profile:{" "}
-          {closestProfile.title}
-        </Typography>
+        <Chip label={`Profile: ${closestProfile.title}`} color="primary" />
         <Stack direction="row" spacing={0} alignItems="center">
           {closestProfile.data.map((value, dataIndex) => (
             <Stack

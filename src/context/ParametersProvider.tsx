@@ -34,7 +34,7 @@ const defaultParameters = {
   launchPoint: { lat: 53.0443, lng: -0.485 },
   surfaceWind: { speed: 18, direction: 280 },
   twoThousandFtWind: { speed: 30, direction: 310 },
-  releaseHeight: 1800,
+  releaseHeight: 1700,
   cableLength: 1100,
   safetyBuffer: 25, //as percentage
   cableWeight: 0.5, //not used
