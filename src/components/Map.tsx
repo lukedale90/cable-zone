@@ -37,7 +37,7 @@ const UpdateMapView = ({ center }: { center: LatLngExpression }) => {
       // Update the map view only if the center has changed
       if (currentCenter.lat !== lat || currentCenter.lng !== lng) {
         map.setView(center);
-      } 
+      }
     });
   }, [center, map]);
 
@@ -62,6 +62,7 @@ const Map = () => {
   const [sausagePolygon, setSausagePolygon] = React.useState<
     { lat: number; lng: number }[]
   >([]);
+  const [RWYHeading, setRWYHeading] = React.useState<number>(0);
   // Create a custom yellow circle icon
   const winchIcon = L.divIcon({
     className: "custom-icon",
@@ -81,6 +82,27 @@ const Map = () => {
     iconAnchor: [10, 10],
   });
 
+  const averageDirection = (() => {
+    const surfaceDirectionRad =
+      (parameters.surfaceWind.direction * Math.PI) / 180;
+    const twoThousandFtDirectionRad =
+      (parameters.twoThousandFtWind.direction * Math.PI) / 180;
+
+    // Convert directions to vectors
+    const x =
+      Math.cos(surfaceDirectionRad) + Math.cos(twoThousandFtDirectionRad);
+    const y =
+      Math.sin(surfaceDirectionRad) + Math.sin(twoThousandFtDirectionRad);
+
+    // Calculate the average direction in radians
+    const avgDirectionRad = Math.atan2(y, x);
+
+    // Convert back to degrees and normalize to 0-360°
+    return (avgDirectionRad * 180) / Math.PI >= 0
+      ? (avgDirectionRad * 180) / Math.PI
+      : (avgDirectionRad * 180) / Math.PI + 360;
+  })();
+
   useEffect(() => {
     const distance = calculateDistance(
       parameters.winchLocation,
@@ -93,8 +115,6 @@ const Map = () => {
       parameters.surfaceWind.speed,
       parameters.customLaunchProfile
     );
-
-    console.log('Custom Launch Profile:', parameters.customLaunchProfile);
 
     const windGradient = calculateWindGradient(
       parameters.surfaceWind.speed,
@@ -200,6 +220,51 @@ const Map = () => {
   ]);
 
   useEffect(() => {
+    const toRad = (deg: number) => (deg * Math.PI) / 180;
+    const toDeg = (rad: number) => (rad * 180) / Math.PI;
+
+    const { winchLocation, launchPoint } = parameters;
+    const dLon = toRad(winchLocation.lng - launchPoint.lng);
+    const lat1 = toRad(launchPoint.lat);
+    const lat2 = toRad(winchLocation.lat);
+    const y = Math.sin(dLon) * Math.cos(lat2);
+    const x =
+      Math.cos(lat1) * Math.sin(lat2) -
+      Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+    let brng = Math.atan2(y, x);
+    brng = (toDeg(brng) + 360) % 360;
+
+    setRWYHeading(brng);
+  }, [parameters.winchLocation, parameters.launchPoint]);
+
+  useEffect(() => {
+    //update theoretical max height
+    const lengthInFeet = parameters.cableLength * 3.28084;
+
+    const nilWindHeight = lengthInFeet * 0.3; // 60% of cable length in feet
+
+    const averageSpeed =
+      (parameters.surfaceWind.speed + parameters.twoThousandFtWind.speed) / 2;
+
+    const windDirectionTo = (averageDirection - RWYHeading + 360) % 360;
+    const windDirectionToRad = (windDirectionTo * Math.PI) / 180;
+    const headwind = averageSpeed * Math.cos(windDirectionToRad); // Headwind/Tailwind component (North-South)
+
+    const windFactor = (headwind * 3.5) / 100 + 1; // Rough linear approximation
+    const theoreticalMaxHeight = nilWindHeight * windFactor;
+    
+    setParameters((prev) => ({
+      ...prev,
+      theroreticalMaxHeight: Math.round(theoreticalMaxHeight),
+    }));
+  }, [
+    parameters.cableLength,
+    parameters.surfaceWind,
+    parameters.twoThousandFtWind,
+    setParameters,
+  ]);
+
+  useEffect(() => {
     setView([parameters.viewLocation.lat, parameters.viewLocation.lng]);
 
     //update winch and launch point if view location changes
@@ -291,37 +356,59 @@ const Map = () => {
         {/* Heading label */}
         {(() => {
           // Calculate heading in degrees from launch to winch
-          const toRad = (deg: number) => (deg * Math.PI) / 180;
-          const toDeg = (rad: number) => (rad * 180) / Math.PI;
+          // const toRad = (deg: number) => (deg * Math.PI) / 180;
+          // const toDeg = (rad: number) => (rad * 180) / Math.PI;
           const { winchLocation, launchPoint } = parameters;
-          const dLon = toRad(winchLocation.lng - launchPoint.lng);
-          const lat1 = toRad(launchPoint.lat);
-          const lat2 = toRad(winchLocation.lat);
-          const y = Math.sin(dLon) * Math.cos(lat2);
-          const x =
-            Math.cos(lat1) * Math.sin(lat2) -
-            Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-          let brng = Math.atan2(y, x);
-          brng = (toDeg(brng) + 360) % 360;
+          // const dLon = toRad(winchLocation.lng - launchPoint.lng);
+          // const lat1 = toRad(launchPoint.lat);
+          // const lat2 = toRad(winchLocation.lat);
+          // const y = Math.sin(dLon) * Math.cos(lat2);
+          // const x =
+          //   Math.cos(lat1) * Math.sin(lat2) -
+          //   Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+          // let brng = Math.atan2(y, x);
+          // brng = (toDeg(brng) + 360) % 360;
+
+          // setRWYHeading(brng);
           // Midpoint for label
           const midLat = (winchLocation.lat + launchPoint.lat) / 2;
           const midLng = (winchLocation.lng + launchPoint.lng) / 2;
 
-          const boxHeading = brng < 180 ? brng + 270 : brng + 90; // Invert if heading is less than 180
+          const boxHeading =
+            RWYHeading < 180 ? RWYHeading + 270 : RWYHeading + 90; // Invert if heading is less than 180
 
           return (
-            <Marker
-              position={{ lat: midLat, lng: midLng }}
-              icon={L.divIcon({
-                className: "",
-                html: `<div style="background:rgba(255,255,255,0.8);padding:2px 6px;border-radius:4px;border:1px solid #1976d2;font-size:12px;color:#1976d2; transform: rotate(${boxHeading}deg); white-space:nowrap;">
-                ${brng.toFixed(0).padStart(3, "0")}° ${parameters.cableLength}m
+            <>
+              {parameters.releaseHeight > parameters.theroreticalMaxHeight ? (
+                <Marker
+                  position={{ lat: midLat, lng: midLng }}
+                  icon={L.divIcon({
+                    className: "",
+                    html: `<div style="background:rgba(255, 0, 0, 0.8);padding:2px 6px;border-radius:4px;border:1px solid #d21919ff;font-size:12px;color:#fff; transform: rotate(${boxHeading}deg); white-space:nowrap;">
+                      Release Height Unreachable
+                    </div>`,
+                    iconSize: [180, 24],
+                    iconAnchor: [90, 12],
+                  })}
+                  interactive={false}
+                />
+              ) : (
+                <Marker
+                  position={{ lat: midLat, lng: midLng }}
+                  icon={L.divIcon({
+                    className: "",
+                    html: `<div style="background:rgba(255,255,255,0.8);padding:2px 6px;border-radius:4px;border:1px solid #1976d2;font-size:12px;color:#1976d2; transform: rotate(${boxHeading}deg); white-space:nowrap;">
+                ${RWYHeading.toFixed(0).padStart(3, "0")}° ${
+                      parameters.cableLength
+                    }m
               </div>`,
-                iconSize: [80, 24],
-                iconAnchor: [40, 12],
-              })}
-              interactive={false}
-            />
+                    iconSize: [80, 24],
+                    iconAnchor: [40, 12],
+                  })}
+                  interactive={false}
+                />
+              )}
+            </>
           );
         })()}
 

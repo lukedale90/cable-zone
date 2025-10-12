@@ -69,7 +69,7 @@ const LaunchProfileControl = ({
   const closestProfile =
     parameters.customLaunchProfile &&
     parameters.customLaunchProfile.length === 10
-      ? { wind: "custom", data: parameters.customLaunchProfile }
+      ? { wind: "custom", title: "Custom Profile", data: parameters.customLaunchProfile }
       : launchProfile[profileKey];
 
   return (
@@ -81,9 +81,7 @@ const LaunchProfileControl = ({
         </Alert>
         <Typography variant="subtitle1">
           Closest Profile:{" "}
-          {closestProfile.wind === "custom"
-            ? "Custom"
-            : closestProfile.wind + " kts Headwind"}
+          {closestProfile.title}
         </Typography>
         <Stack direction="row" spacing={0} alignItems="center">
           {closestProfile.data.map((value, dataIndex) => (

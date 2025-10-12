@@ -31,30 +31,37 @@ const SettingsPanel = () => {
 
   return (
     <Stack>
-      <Stack sx={{ p: 3 }} spacing={2}>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center">
-          <Typography variant="caption">Release Height</Typography>
-          <Chip label={`${parameters.releaseHeight} ft`} color="primary" />
-        </Stack>
-        <Slider
-          value={parameters.releaseHeight}
-          onChange={(_, value) =>
-            handleChange("releaseHeight", value as number)
-          }
-          min={100}
-          max={3000}
-          step={100}
-          valueLabelDisplay="auto"
-        />
-        <LaunchProfileControl
-          activeWind={parameters.surfaceWind.speed}
-          maxHeight={parameters.releaseHeight}
-          maxCableLength={parameters.cableLength}
-        />
-      </Stack>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Launch Profile</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Stack sx={{ p: 3 }} spacing={2}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center">
+              <Typography variant="caption">Release Height</Typography>
+              <Chip label={`${parameters.releaseHeight} ft`} color="primary" />
+            </Stack>
+            <Slider
+              value={parameters.releaseHeight}
+              onChange={(_, value) =>
+                handleChange("releaseHeight", value as number)
+              }
+              min={100}
+              max={3000}
+              step={100}
+              valueLabelDisplay="auto"
+            />
+            <LaunchProfileControl
+              activeWind={parameters.surfaceWind.speed}
+              maxHeight={parameters.releaseHeight}
+              maxCableLength={parameters.cableLength}
+            />
+          </Stack>
+        </AccordionDetails>
+      </Accordion>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Wind Controls</Typography>

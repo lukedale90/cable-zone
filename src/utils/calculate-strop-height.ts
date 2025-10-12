@@ -13,8 +13,6 @@ export const calculateStropHeights = (
   let closestProfile;
   if (customLaunchProfile && customLaunchProfile.length === 10) {
     closestProfile = { wind: "custom", data: customLaunchProfile };
-
-    console.log("Using custom launch profile", closestProfile);
     
   } else {
     // Find the closest wind speed profile
