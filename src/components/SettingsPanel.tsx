@@ -4,15 +4,44 @@ import {
   Typography,
   Stack,
   Chip,
-  Accordion,
-  AccordionSummary,
   AccordionDetails,
   Button,
-  Alert,
+  Tooltip,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { AccordionProps } from "@mui/material/Accordion";
+import MuiAccordionSummary from "@mui/material/AccordionSummary";
+import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
+import { AccordionSummaryProps } from "@mui/material/AccordionSummary";
+import MuiAccordion from "@mui/material/Accordion";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import WarningIcon from "@mui/icons-material/Warning";
 import { calculateTerminalVelocity } from "../utils/calculate-strop-drift";
 import LaunchProfileControl from "./LaunchProfileControl";
+
+const Accordion = styled((props: AccordionProps) => (
+  <MuiAccordion disableGutters elevation={0} square {...props} />
+))(({ theme }) => ({
+  border: `1px solid ${theme.palette.divider}`,
+  "&:not(:last-child)": {
+    borderBottom: 0,
+  },
+  "&::before": {
+    display: "none",
+  },
+}));
+
+const AccordionSummary = styled((props: AccordionSummaryProps) => (
+  <MuiAccordionSummary
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />}
+    {...props}
+  />
+))(({ theme }) => ({
+  backgroundColor: "rgba(0, 0, 0, .03)",
+  [`&.Mui-expanded`]: {
+    backgroundColor: theme.palette.grey[400],
+  }
+}));
 
 const SettingsPanel = () => {
   const { parameters, setParameters, resetStropParameters } = useParameters();
@@ -37,13 +66,26 @@ const SettingsPanel = () => {
           <Typography>Launch Profile</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Stack sx={{ p: 3 }} spacing={2}>
+          <Stack spacing={1}>
             <Stack
               direction="row"
               justifyContent="space-between"
               alignItems="center">
               <Typography variant="caption">Release Height</Typography>
-              <Chip label={`${parameters.releaseHeight} ft`} color="primary" />
+              {parameters.releaseHeight > parameters.theroreticalMaxHeight ? (
+                <Tooltip title={`Warning: The release height exceeds the theoretical maximum of ${parameters.theroreticalMaxHeight}ft based on the cable length and headwind component.`}>
+                  <Chip
+                    label={`${parameters.releaseHeight} ft`}
+                    color="error"
+                    icon={<WarningIcon fontSize="small" />}
+                  />
+                </Tooltip>
+              ) : (
+                <Chip
+                  label={`${parameters.releaseHeight} ft`}
+                  color="primary"
+                />
+              )}
             </Stack>
             <Slider
               value={parameters.releaseHeight}
@@ -55,12 +97,29 @@ const SettingsPanel = () => {
               step={100}
               valueLabelDisplay="auto"
             />
-            {parameters.releaseHeight > parameters.theroreticalMaxHeight && (
-              <Alert severity="warning">
-                Warning: The release height exceeds the theoretical maximum
-                based on the cable length and headwind component.
-              </Alert>
-            )}
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center">
+              <Typography variant="caption">Surface Wind Speed</Typography>
+              <Chip
+                label={`${parameters.surfaceWind.speed} kts`}
+                color="primary"
+              />
+            </Stack>
+            <Slider
+              value={parameters.surfaceWind.speed}
+              onChange={(_, value) =>
+                handleChange("surfaceWind", {
+                  ...parameters.surfaceWind,
+                  speed: value as number,
+                })
+              }
+              min={1}
+              max={50}
+              step={1}
+              valueLabelDisplay="auto"
+            />
             <LaunchProfileControl
               activeWind={parameters.surfaceWind.speed}
               maxHeight={parameters.releaseHeight}
@@ -76,7 +135,7 @@ const SettingsPanel = () => {
         <AccordionDetails>
           <Stack spacing={2}>
             <Stack spacing={3} direction="row" justifyContent="space-between">
-              <Stack justifyContent="space-between" alignItems="center">
+              <Stack justifyContent="space-around" alignItems="center">
                 <Typography variant="caption">Surface Wind</Typography>
                 <Chip
                   label={`${parameters.surfaceWind.direction
@@ -114,7 +173,7 @@ const SettingsPanel = () => {
               </Stack>
             </Stack>
             <Stack spacing={3} direction="row" justifyContent="space-between">
-              <Stack justifyContent="space-between" alignItems="center">
+              <Stack justifyContent="space-around" alignItems="center">
                 <Typography variant="caption">2000ft Wind</Typography>
                 <Chip
                   label={`${parameters.twoThousandFtWind.direction
@@ -164,7 +223,7 @@ const SettingsPanel = () => {
           <Typography>Strop Controls</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Stack spacing={3}>
+          <Stack spacing={1}>
             <Stack
               direction="row"
               justifyContent="space-between"
@@ -267,9 +326,9 @@ const SettingsPanel = () => {
           </Stack>
         </AccordionDetails>
       </Accordion>
-            {/* Key for map */}
+      {/* Key for map */}
 
-      <Stack direction="row" spacing={1} sx={{ p: 2 }} alignItems={"center"}>
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ p: 2 }} alignItems={"center"}>
         <Typography variant="caption">Map Key:</Typography>
         <Chip label="Potential Strop Impact Area" color="warning" />
         <Chip label="Area of Drift" color="error" />

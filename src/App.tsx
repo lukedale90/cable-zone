@@ -61,7 +61,7 @@ function App() {
               }} // Set max width
               onClose={toggleDrawer(false)}>
               <SettingsPanel />
-              <Button onClick={toggleDrawer(false)}>Close</Button>
+              <Button onClick={toggleDrawer(false)} variant="outlined" sx={{ mt: 'auto', mb: 2, mx: 2 }}>Close</Button>
             </Drawer>
           )}
           <div style={{ flex: 1 }}>

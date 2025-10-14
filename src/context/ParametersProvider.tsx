@@ -20,6 +20,9 @@ export interface Parameters {
   twoThousandFtWind: { speed: number; direction: number };
   customLaunchProfile: number[];
   theroreticalMaxHeight: number;
+  crossWindComponent: number;
+  headWindComponent: number;
+  RWYHeading: number;
 }
 
 export interface ParametersContextType {
@@ -40,6 +43,9 @@ const defaultParameters = {
   cableWeight: 0.5, //not used
   customLaunchProfile: [],
   theroreticalMaxHeight: 1800,
+  crossWindComponent: 0,
+  headWindComponent: 0,
+  RWYHeading: 247,
 };
 
 const defaultStrop = {
