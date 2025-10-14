@@ -6,9 +6,11 @@ import {
   Polyline,
   Polygon,
   useMap,
+  useMapEvent,
 } from "react-leaflet";
 import L, { LatLngExpression } from "leaflet";
 import { useParameters } from "../context/ParametersContext";
+import { Parameters } from "../context/ParametersProvider";
 
 import "leaflet/dist/leaflet.css";
 import { calculateDistance } from "../utils/calculate-distance"; // Import the utility function
@@ -20,6 +22,7 @@ import {
   calculateIntervalPositions,
 } from "../utils/calculate-drift-coordinates";
 import WindDialContainer from "./WindDial";
+import { calculateWindComponents } from "../utils/calculate-wind-components";
 
 const UpdateMapView = ({ center }: { center: LatLngExpression }) => {
   const map = useMap();
@@ -62,7 +65,7 @@ const Map = () => {
   const [sausagePolygon, setSausagePolygon] = React.useState<
     { lat: number; lng: number }[]
   >([]);
-  const [RWYHeading, setRWYHeading] = React.useState<number>(0);
+  //const [RWYHeading, setRWYHeading] = React.useState<number>(0);
   // Create a custom yellow circle icon
   const winchIcon = L.divIcon({
     className: "custom-icon",
@@ -81,6 +84,35 @@ const Map = () => {
     iconSize: [20, 20],
     iconAnchor: [10, 10],
   });
+
+  type AnimatedPolylineProps = {
+    positions: LatLngExpression[] | LatLngExpression[][];
+    pathOptions?: L.PathOptions;
+  };
+
+  const AnimatedPolyline: React.FC<AnimatedPolylineProps> = ({
+    positions,
+    pathOptions,
+  }) => {
+    const polylineRef = React.useRef<L.Polyline>(null);
+
+    useEffect(() => {
+      if (polylineRef.current) {
+        const polylineElement = polylineRef.current.getElement();
+        if (polylineElement) {
+          polylineElement.classList.add("animated-dash");
+        }
+      }
+    }, []);
+
+    return (
+      <Polyline
+        ref={polylineRef}
+        positions={positions}
+        pathOptions={pathOptions}
+      />
+    );
+  };
 
   const averageDirection = (() => {
     const surfaceDirectionRad =
@@ -234,7 +266,8 @@ const Map = () => {
     let brng = Math.atan2(y, x);
     brng = (toDeg(brng) + 360) % 360;
 
-    setRWYHeading(brng);
+    //setRWYHeading(brng);
+    setParameters((prev) => ({ ...prev, RWYHeading: brng }));
   }, [parameters.winchLocation, parameters.launchPoint]);
 
   useEffect(() => {
@@ -246,13 +279,15 @@ const Map = () => {
     const averageSpeed =
       (parameters.surfaceWind.speed + parameters.twoThousandFtWind.speed) / 2;
 
-    const windDirectionTo = (averageDirection - RWYHeading + 360) % 360;
-    const windDirectionToRad = (windDirectionTo * Math.PI) / 180;
-    const headwind = averageSpeed * Math.cos(windDirectionToRad); // Headwind/Tailwind component (North-South)
+    const { headwind } = calculateWindComponents(
+      averageSpeed,
+      averageDirection,
+      parameters.RWYHeading
+    );
 
     const windFactor = (headwind * 3.5) / 100 + 1; // Rough linear approximation
     const theoreticalMaxHeight = nilWindHeight * windFactor;
-    
+
     setParameters((prev) => ({
       ...prev,
       theroreticalMaxHeight: Math.round(theoreticalMaxHeight),
@@ -264,30 +299,56 @@ const Map = () => {
     setParameters,
   ]);
 
+  //update headwind and crosswind components
   useEffect(() => {
-    setView([parameters.viewLocation.lat, parameters.viewLocation.lng]);
+    const { headwind, crosswind } = calculateWindComponents(
+      parameters.surfaceWind.speed,
+      parameters.surfaceWind.direction,
+      parameters.RWYHeading
+    );
 
-    //update winch and launch point if view location changes
     setParameters((prev) => ({
       ...prev,
-      winchLocation: {
-        lat: parameters.viewLocation.lat - 0.0022,
-        lng: parameters.viewLocation.lng - 0.0045,
-      },
-      launchPoint: {
-        lat: parameters.viewLocation.lat + 0.0018,
-        lng: parameters.viewLocation.lng + 0.011,
-      },
+      headWindComponent: Math.round(headwind),
+      crossWindComponent: Math.round(crosswind),
     }));
+  }, [parameters.surfaceWind, parameters.RWYHeading, setParameters]);
+
+  useEffect(() => {
+    setView([parameters.viewLocation.lat, parameters.viewLocation.lng]);
   }, [parameters.viewLocation, setParameters]);
+
+  //use Parameters type
+  const MapEventHandler = ({
+    setParameters,
+  }: {
+    setParameters: React.Dispatch<React.SetStateAction<Parameters>>;
+  }) => {
+    useMapEvent("moveend", (event) => {
+      const map = event.target; // Get the map instance
+      const center = map.getCenter(); // Get the new center
+      const zoom = map.getZoom(); // Get the new zoom level
+
+      // Update the parameters with the new center and zoom
+      setParameters((prev) => ({
+        ...prev,
+        viewLocation: { lat: center.lat, lng: center.lng },
+        zoomLevel: zoom,
+      }));
+    });
+
+    return null;
+  };
 
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
       <MapContainer
         center={view}
-        zoom={16}
+        zoom={parameters.zoomLevel}
         style={{ height: "100%", width: "100%" }}>
         <UpdateMapView center={view} />
+        <MapEventHandler setParameters={setParameters} />
+
         <TileLayer
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           attribution="&copy; <a href='https://www.esri.com/'>Esri</a> contributors"
@@ -355,27 +416,14 @@ const Map = () => {
         />
         {/* Heading label */}
         {(() => {
-          // Calculate heading in degrees from launch to winch
-          // const toRad = (deg: number) => (deg * Math.PI) / 180;
-          // const toDeg = (rad: number) => (rad * 180) / Math.PI;
           const { winchLocation, launchPoint } = parameters;
-          // const dLon = toRad(winchLocation.lng - launchPoint.lng);
-          // const lat1 = toRad(launchPoint.lat);
-          // const lat2 = toRad(winchLocation.lat);
-          // const y = Math.sin(dLon) * Math.cos(lat2);
-          // const x =
-          //   Math.cos(lat1) * Math.sin(lat2) -
-          //   Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-          // let brng = Math.atan2(y, x);
-          // brng = (toDeg(brng) + 360) % 360;
-
-          // setRWYHeading(brng);
-          // Midpoint for label
           const midLat = (winchLocation.lat + launchPoint.lat) / 2;
           const midLng = (winchLocation.lng + launchPoint.lng) / 2;
 
           const boxHeading =
-            RWYHeading < 180 ? RWYHeading + 270 : RWYHeading + 90; // Invert if heading is less than 180
+            parameters.RWYHeading < 180
+              ? parameters.RWYHeading + 270
+              : parameters.RWYHeading + 90; // Invert if heading is less than 180
 
           return (
             <>
@@ -398,7 +446,7 @@ const Map = () => {
                   icon={L.divIcon({
                     className: "",
                     html: `<div style="background:rgba(255,255,255,0.8);padding:2px 6px;border-radius:4px;border:1px solid #1976d2;font-size:12px;color:#1976d2; transform: rotate(${boxHeading}deg); white-space:nowrap;">
-                ${RWYHeading.toFixed(0).padStart(3, "0")}° ${
+                ${parameters.RWYHeading.toFixed(0).padStart(3, "0")}° ${
                       parameters.cableLength
                     }m
               </div>`,
@@ -425,18 +473,17 @@ const Map = () => {
           }}
         />
         {driftCoordinates2.map((item, index) => (
-          <Polyline
+          <AnimatedPolyline
             key={index}
             positions={[
               [item.start.lat, item.start.lng],
               [item.drift.lat, item.drift.lng],
             ]}
             pathOptions={{
-              color: "#ffffff80",
+              color: "white",
               weight: 1,
-              dashArray: "2, 6",
-              // Animate dashes using CSS class
-              className: "animated-dash",
+              opacity: 0.7,
+              dashArray: "5, 10",
             }}
           />
         ))}
@@ -479,10 +526,7 @@ const Map = () => {
           }}
         />
       </MapContainer>
-      <WindDialContainer
-        surfaceWind={parameters.surfaceWind}
-        twoThousandFtWind={parameters.twoThousandFtWind}
-      />
+      <WindDialContainer />
     </div>
   );
 };

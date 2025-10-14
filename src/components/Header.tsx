@@ -7,10 +7,12 @@ import {
   Stack,
   TextField,
   Button,
+  Autocomplete,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import { useParameters } from "../context/ParametersContext";
+import { locationOptions, LocationOption } from "../utils/available-sites";
 
 type HeaderProps = {
   isSmallScreen: boolean;
@@ -23,25 +25,95 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
   const { setParameters } = useParameters();
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [predefinedOption, setPredefinedOption] =
+    useState<LocationOption | null>(null);
   const [showSearchBar, setShowSearchBar] = useState(false);
 
   const handleSearch = () => {
-    // Implement geocoding API call here to convert address to lat/lng
-    // For example, using OpenCage Geocoding API or Nominatim
-    // Update the viewLocation in parameters context with the new lat/lng
+    if (predefinedOption) {
+      setParameters((prev) => ({
+        ...prev,
+        viewLocation: {
+          lat: Number(predefinedOption.lat),
+          lng: Number(predefinedOption.lng),
+        },
+        winchLocation: {
+          lat: Number(predefinedOption.lat) - 0.0022,
+          lng: Number(predefinedOption.lng) - 0.0045,
+        },
+        launchPoint: {
+          lat: Number(predefinedOption.lat) + 0.0018,
+          lng: Number(predefinedOption.lng) + 0.011,
+        },
+      }));
+
+      setPredefinedOption(null);
+
+      return;
+    }
 
     fetch(
-      `https://nominatim.openstreetmap.org/search?q=${searchQuery}&format=json`
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+        searchQuery
+      )}&format=json`
     )
       .then((response) => response.json())
       .then((data) => {
+        if (!Array.isArray(data) || data.length === 0) {
+          alert("Location not found. Please try a different address.");
+          return;
+        }
         const { lat, lon } = data[0];
         setParameters((prev) => ({
           ...prev,
           viewLocation: { lat: Number(lat), lng: Number(lon) },
+          winchLocation: {
+            lat: Number(lat) - 0.0022,
+            lng: Number(lon) - 0.0045,
+          },
+          launchPoint: {
+            lat: Number(lat) + 0.0018,
+            lng: Number(lon) + 0.011,
+          },
         }));
+      })
+      .catch(() => {
+        alert("Error searching for location. Please try again.");
       });
   };
+
+  const searchInput = (
+    <Autocomplete
+      sx={{ width: "100%" }}
+      freeSolo
+      options={locationOptions}
+      groupBy={(option) => (typeof option === "string" ? "" : option.group)}
+      getOptionLabel={(option) =>
+        typeof option === "string" ? option : option.name
+      }
+      onInputChange={(_, newInputValue) => setSearchQuery(newInputValue)}
+      onChange={(_, newValue) => {
+        if (newValue && typeof newValue !== "string") {
+          setPredefinedOption(newValue);
+        }
+      }}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          fullWidth
+          variant="outlined"
+          size="small"
+          placeholder="Enter or select location"
+          sx={{ backgroundColor: "white", borderRadius: 1 }}
+          onKeyUp={(e) => {
+            if (e.key === "Enter") {
+              handleSearch();
+            }
+          }}
+        />
+      )}
+    />
+  );
 
   return (
     <AppBar position="static">
@@ -86,19 +158,7 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
             direction="row"
             alignItems="center"
             sx={{ marginLeft: "auto" }}>
-            <TextField
-              variant="outlined"
-              size="small"
-              placeholder="Enter location"
-              sx={{ backgroundColor: "white", borderRadius: 1 }}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyUp={(e) => {
-                if (e.key === "Enter") {
-                  handleSearch();
-                }
-              }}
-            />
+            <Stack sx={{ width: "400px" }}>{searchInput}</Stack>
             <Button
               variant="contained"
               color="warning"
@@ -111,19 +171,7 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
       </Toolbar>
       {isSmallScreen && showSearchBar && (
         <Stack direction="row" alignItems="center" sx={{ width: "100%", p: 1 }}>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Enter location"
-            sx={{ backgroundColor: "white", borderRadius: 1, width: "100%" }}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyUp={(e) => {
-              if (e.key === "Enter") {
-                handleSearch();
-              }
-            }}
-          />
+          <Stack sx={{ width: "100%" }}>{searchInput}</Stack>
           <Button
             variant="contained"
             color="warning"

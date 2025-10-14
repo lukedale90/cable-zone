@@ -73,18 +73,15 @@ const LaunchProfileControl = ({
       : launchProfile[profileKey];
 
   return (
-    <div style={{ maxWidth: "100%", overflowX: "auto" }}>
+    <div style={{ maxWidth: "100%", overflowX: "auto", marginTop: 16 }}>
       <Stack spacing={2} alignItems="center">
-        <Alert severity="info">
-          Adjust the sliders to customise the launch profile. The profile will
-          override preset profiles when in edit mode.
-        </Alert>
         <Chip label={`Profile: ${closestProfile.title}`} color="primary" />
         <Stack direction="row" spacing={0} alignItems="center">
           {closestProfile.data.map((value, dataIndex) => (
             <Stack
               key={dataIndex}
               className="slider-container"
+              alignItems={"center"}
               style={{ height: "400px" }}>
               <Slider
                 orientation="vertical"
@@ -103,6 +100,7 @@ const LaunchProfileControl = ({
               />
               <Chip
                 size="small"
+                sx={{ mt: 1 }}
                 label={`${(maxCableLength * ((dataIndex + 1) / 10)).toFixed(
                   0
                 )}`}
@@ -113,6 +111,10 @@ const LaunchProfileControl = ({
         <Stack>
           <Typography variant="caption">Distance (m)</Typography>
         </Stack>
+                <Alert severity="info">
+          Adjust the sliders to customise the launch profile. The profile will
+          override preset profiles when in edit mode.
+        </Alert>
         <Button
           sx={{ width: "100%" }}
           variant={editMode ? "contained" : "outlined"}
