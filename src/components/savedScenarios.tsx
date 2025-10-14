@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParameters } from "../context/ParametersContext";
 import { Parameters } from "../context/ParametersProvider";
 import {
   Alert,
   Box,
-  Button,
   IconButton,
   List,
   ListItem,

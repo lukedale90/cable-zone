@@ -25,7 +25,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import { calculateTerminalVelocity } from "../utils/calculate-strop-drift";
 import LaunchProfileControl from "./LaunchProfileControl";
 import SavedScenarios from "./savedScenarios";
-import { Opacity } from "@mui/icons-material";
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
