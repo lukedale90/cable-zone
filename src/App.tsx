@@ -101,17 +101,27 @@ function App() {
             p: 4,
           }}>
           <Typography id="welcome-modal-title" variant="h6" component="h2">
-            Welcome to CableZone!
+            Strop-Drop User Acceptance
           </Typography>
           <Typography id="welcome-modal-description" sx={{ mt: 2 }}>
-            This is a brief introduction to the app. Click below to get started.
+            This application is provided for informational and visualisation
+            purposes only. While we strive to ensure the accuracy of the data
+            and calculations, we make no guarantees regarding their correctness,
+            completeness, or reliability. This application is not intended to
+            replace professional judgment or advice. Users are solely
+            responsible for the data they input and any decisions made based on
+            the results.
+          </Typography>
+          <Typography id="welcome-modal-description-cont" sx={{ mt: 2 }}>
+            This application uses cookies and session storage to save
+            configuration and scenario data. Nothing more.
           </Typography>
           <Button
             variant="contained"
             color="primary"
             onClick={handleClose}
             sx={{ mt: 2 }}>
-            Get Started
+            Accept
           </Button>
         </Box>
       </Modal>
