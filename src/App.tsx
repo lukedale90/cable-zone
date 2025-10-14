@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Drawer, useMediaQuery, Button } from "@mui/material";
+import {
+  Modal,
+  Box,
+  Typography,
+  Drawer,
+  useMediaQuery,
+  Button,
+} from "@mui/material";
 
 import CssBaseline from "@mui/material/CssBaseline";
 import Map from "./components/Map";
@@ -12,7 +19,7 @@ import Header from "./components/Header";
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   // const [searchQuery, setSearchQuery] = useState("");
-
+  const [isModalOpen, setIsModalOpen] = useState(true);
   // Use Material-UI's useMediaQuery to detect screen size
   const isSmallScreen = useMediaQuery("(max-width: 1024px)"); // iPad landscape width is 1024px
 
@@ -27,6 +34,8 @@ function App() {
       }
       setDrawerOpen(open);
     };
+
+  const handleClose = () => setIsModalOpen(false);
 
   return (
     <ParametersProvider>
@@ -61,7 +70,12 @@ function App() {
               }} // Set max width
               onClose={toggleDrawer(false)}>
               <SettingsPanel />
-              <Button onClick={toggleDrawer(false)} variant="outlined" sx={{ mt: 'auto', mb: 2, mx: 2 }}>Close</Button>
+              <Button
+                onClick={toggleDrawer(false)}
+                variant="outlined"
+                sx={{ mt: "auto", mb: 2, mx: 2 }}>
+                Close
+              </Button>
             </Drawer>
           )}
           <div style={{ flex: 1 }}>
@@ -69,6 +83,38 @@ function App() {
           </div>
         </div>
       </div>
+      <Modal
+        open={isModalOpen}
+        //onClose={handleClose}
+        aria-labelledby="welcome-modal-title"
+        aria-describedby="welcome-modal-description">
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}>
+          <Typography id="welcome-modal-title" variant="h6" component="h2">
+            Welcome to CableZone!
+          </Typography>
+          <Typography id="welcome-modal-description" sx={{ mt: 2 }}>
+            This is a brief introduction to the app. Click below to get started.
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleClose}
+            sx={{ mt: 2 }}>
+            Get Started
+          </Button>
+        </Box>
+      </Modal>
     </ParametersProvider>
   );
 }

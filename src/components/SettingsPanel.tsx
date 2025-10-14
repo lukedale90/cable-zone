@@ -16,8 +16,16 @@ import { AccordionSummaryProps } from "@mui/material/AccordionSummary";
 import MuiAccordion from "@mui/material/Accordion";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import WarningIcon from "@mui/icons-material/Warning";
+import SignalCellularAltIcon from "@mui/icons-material/SignalCellularAlt";
+import AirIcon from "@mui/icons-material/Air";
+import SwapCallsIcon from "@mui/icons-material/SwapCalls";
+import SecurityIcon from "@mui/icons-material/Security";
+import SaveIcon from '@mui/icons-material/Save';
+
 import { calculateTerminalVelocity } from "../utils/calculate-strop-drift";
 import LaunchProfileControl from "./LaunchProfileControl";
+import SavedScenarios from "./savedScenarios";
+import { Opacity } from "@mui/icons-material";
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -39,8 +47,8 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
 ))(({ theme }) => ({
   backgroundColor: "rgba(0, 0, 0, .03)",
   [`&.Mui-expanded`]: {
-    backgroundColor: theme.palette.grey[400],
-  }
+    backgroundColor: theme.palette.grey[300],
+  },
 }));
 
 const SettingsPanel = () => {
@@ -63,7 +71,10 @@ const SettingsPanel = () => {
     <Stack>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Launch Profile</Typography>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <SignalCellularAltIcon sx={{ opacity: 0.5 }} />
+            <Typography>Launch Profile</Typography>
+          </Stack>
         </AccordionSummary>
         <AccordionDetails>
           <Stack spacing={1}>
@@ -73,7 +84,8 @@ const SettingsPanel = () => {
               alignItems="center">
               <Typography variant="caption">Release Height</Typography>
               {parameters.releaseHeight > parameters.theroreticalMaxHeight ? (
-                <Tooltip title={`Warning: The release height exceeds the theoretical maximum of ${parameters.theroreticalMaxHeight}ft based on the cable length and headwind component.`}>
+                <Tooltip
+                  title={`Warning: The release height exceeds the theoretical maximum of ${parameters.theroreticalMaxHeight}ft based on the cable length and headwind component.`}>
                   <Chip
                     label={`${parameters.releaseHeight} ft`}
                     color="error"
@@ -130,7 +142,10 @@ const SettingsPanel = () => {
       </Accordion>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Wind Controls</Typography>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <AirIcon sx={{ opacity: 0.5 }} />
+            <Typography>Wind Controls</Typography>
+          </Stack>
         </AccordionSummary>
         <AccordionDetails>
           <Stack spacing={2}>
@@ -220,7 +235,10 @@ const SettingsPanel = () => {
 
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Strop Controls</Typography>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <SwapCallsIcon sx={{ opacity: 0.5 }} />
+            <Typography>Strop Controls</Typography>
+          </Stack>
         </AccordionSummary>
         <AccordionDetails>
           <Stack spacing={1}>
@@ -299,7 +317,10 @@ const SettingsPanel = () => {
       </Accordion>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Safety Parameters</Typography>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <SecurityIcon sx={{ opacity: 0.5 }} />
+            <Typography>Safety Margins</Typography>
+          </Stack>
         </AccordionSummary>
         <AccordionDetails>
           <Stack spacing={3}>
@@ -326,9 +347,24 @@ const SettingsPanel = () => {
           </Stack>
         </AccordionDetails>
       </Accordion>
+            <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <SaveIcon sx={{ opacity: 0.5 }} />
+            <Typography>Saved Scenarios</Typography>
+          </Stack>
+        </AccordionSummary>
+        <AccordionDetails>
+             <SavedScenarios />
+        </AccordionDetails>
+      </Accordion>
       {/* Key for map */}
 
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ p: 2 }} alignItems={"center"}>
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        spacing={1}
+        sx={{ p: 2 }}
+        alignItems={"center"}>
         <Typography variant="caption">Map Key:</Typography>
         <Chip label="Potential Strop Impact Area" color="warning" />
         <Chip label="Area of Drift" color="error" />

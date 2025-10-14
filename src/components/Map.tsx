@@ -6,9 +6,11 @@ import {
   Polyline,
   Polygon,
   useMap,
+  useMapEvent,
 } from "react-leaflet";
 import L, { LatLngExpression } from "leaflet";
 import { useParameters } from "../context/ParametersContext";
+import { Parameters } from "../context/ParametersProvider";
 
 import "leaflet/dist/leaflet.css";
 import { calculateDistance } from "../utils/calculate-distance"; // Import the utility function
@@ -314,28 +316,39 @@ const Map = () => {
 
   useEffect(() => {
     setView([parameters.viewLocation.lat, parameters.viewLocation.lng]);
-
-    //update winch and launch point if view location changes
-    setParameters((prev) => ({
-      ...prev,
-      winchLocation: {
-        lat: parameters.viewLocation.lat - 0.0022,
-        lng: parameters.viewLocation.lng - 0.0045,
-      },
-      launchPoint: {
-        lat: parameters.viewLocation.lat + 0.0018,
-        lng: parameters.viewLocation.lng + 0.011,
-      },
-    }));
   }, [parameters.viewLocation, setParameters]);
+
+  //use Parameters type
+  const MapEventHandler = ({
+    setParameters,
+  }: {
+    setParameters: React.Dispatch<React.SetStateAction<Parameters>>;
+  }) => {
+    useMapEvent("moveend", (event) => {
+      const map = event.target; // Get the map instance
+      const center = map.getCenter(); // Get the new center
+      const zoom = map.getZoom(); // Get the new zoom level
+
+      // Update the parameters with the new center and zoom
+      setParameters((prev) => ({
+        ...prev,
+        viewLocation: { lat: center.lat, lng: center.lng },
+        zoomLevel: zoom,
+      }));
+    });
+
+    return null;
+  };
 
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
       <MapContainer
         center={view}
-        zoom={16}
+        zoom={parameters.zoomLevel}
         style={{ height: "100%", width: "100%" }}>
         <UpdateMapView center={view} />
+        <MapEventHandler setParameters={setParameters} />
+
         <TileLayer
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           attribution="&copy; <a href='https://www.esri.com/'>Esri</a> contributors"
