@@ -172,6 +172,8 @@ const Map = () => {
       parameters.launchPoint.lng
     );
 
+    console.log('intervalPositions:', intervalPositions);
+
     //reverse Interval positions to match strop heights from launch to winch
     intervalPositions.reverse();
 
@@ -285,7 +287,7 @@ const Map = () => {
       parameters.RWYHeading
     );
 
-    const windFactor = (headwind * 3.5) / 100 + 1; // Rough linear approximation
+    const windFactor = (headwind * 5.5) / 100 + 1; // Rough linear approximation
     const theoreticalMaxHeight = nilWindHeight * windFactor;
 
     setParameters((prev) => ({

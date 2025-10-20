@@ -42,7 +42,7 @@ export const calculateStropDrift = (
     stropLength
   );
 
-  return stropHeights.map((strop) => {
+  const data = stropHeights.map((strop) => {
     const heightInMeters = strop.height * 0.3048; // Convert height from feet to meters
 
     // Find the closest height in windData
@@ -93,4 +93,18 @@ export const calculateStropDrift = (
       maxDriftY,
     };
   });
+
+  //add 0 drift at distance 0
+  return [
+    {
+      distance: 0,
+      driftX: 0,
+      driftY: 0,
+      minDriftX: 0,
+      maxDriftX: 0,
+      minDriftY: 0,
+      maxDriftY: 0,
+    },
+    ...data,
+  ];
 };

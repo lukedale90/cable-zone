@@ -36,11 +36,13 @@ export const calculateStropHeights = (
     );
   }
 
+
   const data = heightPercentages.map((percentage, index) => {
     const distance = (cableLength / 10) * (index + 1); // Calculate the distance at each 10%
     const height = releaseHeight * percentage; // Calculate the height based on the release height
     return { distance, height };
   });
 
-  return data;
+  // Add distance 0 and height 0 to the start of the heightPercentages
+  return [{ distance: 0, height: 0 }, ...data];
 };

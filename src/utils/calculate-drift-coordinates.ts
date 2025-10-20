@@ -19,10 +19,15 @@ export const calculateIntervalPositions = (
   launchLat: number,
   launchLng: number
 ): { lat: number; lng: number }[] => {
-  return Array.from({ length: 10 }, (_, index) => {
-    const percentage = (index + 1) / 10; // 10%, 20%, ..., 100%
+  const positions = Array.from({ length: 11 }, (_, index) => {
+    const percentage = (index + 1) / 11; // 10%, 20%, ..., 100%
     const lat = winchLat + (launchLat - winchLat) * percentage;
     const lng = winchLng + (launchLng - winchLng) * percentage;
     return { lat, lng };
   });
+
+  // Add the launch point as the first point
+  const data = [ ...positions, { lat: launchLat, lng: launchLng }];
+
+  return data;
 };
