@@ -20,7 +20,7 @@ import SignalCellularAltIcon from "@mui/icons-material/SignalCellularAlt";
 import AirIcon from "@mui/icons-material/Air";
 import SwapCallsIcon from "@mui/icons-material/SwapCalls";
 import SecurityIcon from "@mui/icons-material/Security";
-import SaveIcon from '@mui/icons-material/Save';
+import SaveIcon from "@mui/icons-material/Save";
 
 import { calculateTerminalVelocity } from "../utils/calculate-strop-drift";
 import LaunchProfileControl from "./LaunchProfileControl";
@@ -53,6 +53,8 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
 const SettingsPanel = () => {
   const { parameters, setParameters, resetStropParameters } = useParameters();
 
+  const appOrg = import.meta.env.VITE_APP_ORGANIZATION;
+
   const handleChange = (key: string, value: string | number | object) => {
     setParameters((prev) => ({
       ...prev,
@@ -63,7 +65,7 @@ const SettingsPanel = () => {
   const terminalVelocity = calculateTerminalVelocity(
     parameters.stropWeight,
     parameters.stropDiameter,
-    parameters.stropLength
+    parameters.stropLength,
   );
 
   return (
@@ -81,7 +83,7 @@ const SettingsPanel = () => {
               direction="row"
               justifyContent="space-between"
               alignItems="center">
-              <Typography variant="caption">Release Height</Typography>
+              <Typography variant="caption">Expected Full Launch Height</Typography>
               {parameters.releaseHeight > parameters.theroreticalMaxHeight ? (
                 <Tooltip
                   title={`Warning: The release height exceeds the theoretical maximum of ${parameters.theroreticalMaxHeight}ft based on the cable length and headwind component.`}>
@@ -231,122 +233,130 @@ const SettingsPanel = () => {
           </Stack>
         </AccordionDetails>
       </Accordion>
-
+      {appOrg !== "2fts" && (
+        <>
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <SwapCallsIcon sx={{ opacity: 0.5 }} />
+                <Typography>Strop Controls</Typography>
+              </Stack>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Stack spacing={1}>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center">
+                  <Typography variant="caption">Strop Length</Typography>
+                  <Chip label={`${parameters.stropLength} m`} color="primary" />
+                </Stack>
+                <Slider
+                  value={parameters.stropLength}
+                  onChange={(_, value) =>
+                    handleChange("stropLength", value as number)
+                  }
+                  min={1}
+                  step={1}
+                  max={10}
+                  valueLabelDisplay="auto"
+                />
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center">
+                  <Typography variant="caption">Strop Diameter</Typography>
+                  <Chip
+                    label={`${(parameters.stropDiameter * 100).toFixed(0)} cm`}
+                    color="primary"
+                  />
+                </Stack>
+                <Slider
+                  value={parameters.stropDiameter * 100}
+                  onChange={(_, value) =>
+                    handleChange("stropDiameter", (value as number) / 100)
+                  }
+                  min={1}
+                  step={1}
+                  max={10}
+                  valueLabelDisplay="auto"
+                />
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center">
+                  <Typography variant="caption">Strop Weight</Typography>
+                  <Chip
+                    label={`${parameters.stropWeight} kg`}
+                    color="primary"
+                  />
+                </Stack>
+                <Slider
+                  value={parameters.stropWeight}
+                  onChange={(_, value) =>
+                    handleChange("stropWeight", value as number)
+                  }
+                  min={1}
+                  step={0.5}
+                  max={5}
+                  valueLabelDisplay="auto"
+                />
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center">
+                  <Typography variant="caption">
+                    Est. Terminal Velocity
+                  </Typography>
+                  <Chip
+                    label={`${terminalVelocity.toFixed(2)} m/s`}
+                    color="primary"
+                  />
+                </Stack>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={resetStropParameters}>
+                  Default SkyLaunch Strop
+                </Button>
+              </Stack>
+            </AccordionDetails>
+          </Accordion>
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <SecurityIcon sx={{ opacity: 0.5 }} />
+                <Typography>Safety Margins</Typography>
+              </Stack>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Stack spacing={3}>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center">
+                  <Typography variant="caption">Safety Buffer</Typography>
+                  <Chip
+                    label={`${parameters.safetyBuffer.toFixed(0)} %`}
+                    color="primary"
+                  />
+                </Stack>
+                <Slider
+                  value={parameters.safetyBuffer}
+                  onChange={(_, value) =>
+                    handleChange("safetyBuffer", value as number)
+                  }
+                  min={1}
+                  step={1}
+                  max={100}
+                  valueLabelDisplay="auto"
+                />
+              </Stack>
+            </AccordionDetails>
+          </Accordion>
+        </>
+      )}
       <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <SwapCallsIcon sx={{ opacity: 0.5 }} />
-            <Typography>Strop Controls</Typography>
-          </Stack>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Stack spacing={1}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center">
-              <Typography variant="caption">Strop Length</Typography>
-              <Chip label={`${parameters.stropLength} m`} color="primary" />
-            </Stack>
-            <Slider
-              value={parameters.stropLength}
-              onChange={(_, value) =>
-                handleChange("stropLength", value as number)
-              }
-              min={1}
-              step={1}
-              max={10}
-              valueLabelDisplay="auto"
-            />
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center">
-              <Typography variant="caption">Strop Diameter</Typography>
-              <Chip
-                label={`${(parameters.stropDiameter * 100).toFixed(0)} cm`}
-                color="primary"
-              />
-            </Stack>
-            <Slider
-              value={parameters.stropDiameter * 100}
-              onChange={(_, value) =>
-                handleChange("stropDiameter", (value as number) / 100)
-              }
-              min={1}
-              step={1}
-              max={10}
-              valueLabelDisplay="auto"
-            />
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center">
-              <Typography variant="caption">Strop Weight</Typography>
-              <Chip label={`${parameters.stropWeight} kg`} color="primary" />
-            </Stack>
-            <Slider
-              value={parameters.stropWeight}
-              onChange={(_, value) =>
-                handleChange("stropWeight", value as number)
-              }
-              min={1}
-              step={0.5}
-              max={5}
-              valueLabelDisplay="auto"
-            />
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center">
-              <Typography variant="caption">Est. Terminal Velocity</Typography>
-              <Chip
-                label={`${terminalVelocity.toFixed(2)} m/s`}
-                color="primary"
-              />
-            </Stack>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={resetStropParameters}>
-              Default SkyLaunch Strop
-            </Button>
-          </Stack>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <SecurityIcon sx={{ opacity: 0.5 }} />
-            <Typography>Safety Margins</Typography>
-          </Stack>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Stack spacing={3}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center">
-              <Typography variant="caption">Safety Buffer</Typography>
-              <Chip
-                label={`${parameters.safetyBuffer.toFixed(0)} %`}
-                color="primary"
-              />
-            </Stack>
-            <Slider
-              value={parameters.safetyBuffer}
-              onChange={(_, value) =>
-                handleChange("safetyBuffer", value as number)
-              }
-              min={1}
-              step={1}
-              max={100}
-              valueLabelDisplay="auto"
-            />
-          </Stack>
-        </AccordionDetails>
-      </Accordion>
-            <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Stack direction="row" alignItems="center" spacing={1}>
             <SaveIcon sx={{ opacity: 0.5 }} />
@@ -354,20 +364,9 @@ const SettingsPanel = () => {
           </Stack>
         </AccordionSummary>
         <AccordionDetails>
-             <SavedScenarios />
+          <SavedScenarios />
         </AccordionDetails>
       </Accordion>
-      {/* Key for map */}
-
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        spacing={1}
-        sx={{ p: 2 }}
-        alignItems={"center"}>
-        <Typography variant="caption">Map Key:</Typography>
-        <Chip label="Potential Strop Impact Area" color="warning" />
-        <Chip label="Area of Drift" color="error" />
-      </Stack>
     </Stack>
   );
 };

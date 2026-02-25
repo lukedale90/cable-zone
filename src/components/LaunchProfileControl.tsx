@@ -18,6 +18,8 @@ const LaunchProfileControl = ({
   const [editMode, setEditMode] = useState<boolean>(false);
   const { parameters, setParameters } = useParameters();
 
+  const appOrganization = import.meta.env.VITE_APP_ORGANIZATION;
+
   const handleSliderChange = (dataIndex: number, value: number) => {
     const dataArray = [];
     for (let i = 0; i < 10; i++) {
@@ -69,7 +71,11 @@ const LaunchProfileControl = ({
   const closestProfile =
     parameters.customLaunchProfile &&
     parameters.customLaunchProfile.length === 10
-      ? { wind: "custom", title: "Custom Profile", data: parameters.customLaunchProfile }
+      ? {
+          wind: "custom",
+          title: "Custom Profile",
+          data: parameters.customLaunchProfile,
+        }
       : launchProfile[profileKey];
 
   return (
@@ -102,7 +108,7 @@ const LaunchProfileControl = ({
                 size="small"
                 sx={{ mt: 1 }}
                 label={`${(maxCableLength * ((dataIndex + 1) / 10)).toFixed(
-                  0
+                  0,
                 )}`}
               />
             </Stack>
@@ -111,16 +117,20 @@ const LaunchProfileControl = ({
         <Stack>
           <Typography variant="caption">Distance (m)</Typography>
         </Stack>
-                <Alert severity="info">
-          Adjust the sliders to customise the launch profile. The profile will
-          override preset profiles when in edit mode.
-        </Alert>
-        <Button
-          sx={{ width: "100%" }}
-          variant={editMode ? "contained" : "outlined"}
-          onClick={handleEditModeToggle}>
-          {editMode ? "Use Presets?" : "Custom Override?"}
-        </Button>
+        {appOrganization !== "2fts" && (
+          <>
+            <Alert severity="info">
+              Adjust the sliders to customise the launch profile. The profile
+              will override preset profiles when in edit mode.
+            </Alert>
+            <Button
+              sx={{ width: "100%" }}
+              variant={editMode ? "contained" : "outlined"}
+              onClick={handleEditModeToggle}>
+              {editMode ? "Use Presets?" : "Custom Override?"}
+            </Button>
+          </>
+        )}
       </Stack>
     </div>
   );

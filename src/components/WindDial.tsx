@@ -46,7 +46,7 @@ const WindDial: React.FC<WindDialProps> = ({ direction, color }) => {
         height="80"
         xmlns="http://www.w3.org/2000/svg"
         style={{ transform: `rotate(${direction}deg)` }}>
-        <line x1="20" y1="8" x2="20" y2="72" stroke={color} strokeWidth="4" />
+        <line x1="20" y1="8" x2="20" y2="72" stroke={color} strokeWidth="3" />
         <polygon points="20,76 16,66 24,66" fill={color} />
       </svg>
     </div>
@@ -99,16 +99,14 @@ const WindDialContainer: React.FC = () => {
         position: "absolute",
         top: "10px",
         right: "10px",
+        minWidth: "100px",
         zIndex: 1000,
         backgroundColor: "#ffffff94",
         padding: "5px",
         borderRadius: "20px",
         alignItems: "center",
       }}>
-      <div style={{ position: "relative", padding: "5px", height: "120px" }}>
-        <Typography variant="subtitle1" align="center">
-          Wind
-        </Typography>
+      <div style={{ position: "relative", padding: "5px", height: "100px" }}>
         <div
           style={{
             position: "absolute",
