@@ -15,6 +15,7 @@ import type { MouseEvent, KeyboardEvent } from "react";
 import { ParametersProvider } from "./context/ParametersProvider";
 import SettingsPanel from "./components/SettingsPanel";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 const LandingPage = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -82,6 +83,8 @@ const LandingPage = () => {
             <Map />
           </div>
         </div>
+                  <Footer />
+
       </div>
       <Modal
         open={isModalOpen}
