@@ -1,0 +1,54 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+
+# Add permissions for GitHub token
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: github-pages
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Set environment variables
+      run: |
+        echo "VITE_APP_VERSION=${{ vars.VITE_APP_VERSION || secrets.VITE_APP_VERSION || '1.1.2' }}" >> $GITHUB_ENV
+        echo "VITE_APP_NAME=${{ vars.VITE_APP_NAME || secrets.VITE_APP_NAME || 'Strop Drop' }}" >> $GITHUB_ENV
+        echo "VITE_APP_DESCRIPTION=${{ vars.VITE_APP_DESCRIPTION || secrets.VITE_APP_DESCRIPTION || 'The Drop-Zone Visualiser' }}" >> $GITHUB_ENV
+        echo "VITE_APP_ORGANIZATION=${{ vars.VITE_APP_ORGANIZATION || secrets.VITE_APP_ORGANIZATION || '2fts' }}" >> $GITHUB_ENV
+        echo "VITE_BASE_URL=${{ vars.VITE_BASE_URL || secrets.VITE_BASE_URL || '/cable-zone/' }}" >> $GITHUB_ENV
+        
+    - name: Build
+      env:
+        VITE_APP_NAME: ${{ env.VITE_APP_NAME }}
+        VITE_APP_DESCRIPTION: ${{ env.VITE_APP_DESCRIPTION }}
+        VITE_APP_VERSION: ${{ env.VITE_APP_VERSION }}
+        VITE_APP_ORGANIZATION: ${{ env.VITE_APP_ORGANIZATION }}
+        VITE_DEFAULT_LANGUAGE: ${{ vars.VITE_DEFAULT_LANGUAGE || secrets.VITE_DEFAULT_LANGUAGE || 'en' }}
+        VITE_BASE_URL: ${{ env.VITE_BASE_URL }}
+        VITE_CLOUDFLARE_TOKEN: ${{ secrets.VITE_CLOUDFLARE_TOKEN }}
+      run: npm run build
+      
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist

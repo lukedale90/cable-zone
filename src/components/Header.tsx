@@ -8,16 +8,19 @@ import {
   TextField,
   Button,
   Autocomplete,
+  Box,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
+import HelpIcon from "@mui/icons-material/Help";
 import { useParameters } from "../context/ParametersContext";
 import { locationOptions, LocationOption } from "../utils/available-sites";
+import { Link } from "react-router-dom";
 
 type HeaderProps = {
-  isSmallScreen: boolean;
-  toggleDrawer: (
-    open: boolean
+  isSmallScreen?: boolean;
+  toggleDrawer?: (
+    open: boolean,
   ) => (event: React.MouseEvent | React.KeyboardEvent) => void;
 };
 
@@ -28,6 +31,17 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
   const [predefinedOption, setPredefinedOption] =
     useState<LocationOption | null>(null);
   const [showSearchBar, setShowSearchBar] = useState(false);
+
+  const appName = import.meta.env.VITE_APP_NAME;
+  const appVersion = import.meta.env.VITE_APP_VERSION;
+  const appDescription = import.meta.env.VITE_APP_DESCRIPTION;
+  const appOrg = import.meta.env.VITE_APP_ORGANIZATION;
+
+  //filter the location options to just 2FTS if the organisation is 2fts
+  const filteredLocationOptions =
+    appOrg === "2fts"
+      ? locationOptions.filter((option) => option.group === "2FTS")
+      : locationOptions;
 
   const handleSearch = () => {
     if (predefinedOption) {
@@ -54,8 +68,8 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
 
     fetch(
       `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-        searchQuery
-      )}&format=json`
+        searchQuery,
+      )}&format=json`,
     )
       .then((response) => response.json())
       .then((data) => {
@@ -86,7 +100,7 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
     <Autocomplete
       sx={{ width: "100%" }}
       freeSolo
-      options={locationOptions}
+      options={filteredLocationOptions}
       groupBy={(option) => (typeof option === "string" ? "" : option.group)}
       getOptionLabel={(option) =>
         typeof option === "string" ? option : option.name
@@ -118,7 +132,7 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
   return (
     <AppBar position="static">
       <Toolbar>
-        {isSmallScreen && (
+        {isSmallScreen && toggleDrawer && (
           <IconButton
             edge="start"
             color="inherit"
@@ -129,30 +143,51 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
           </IconButton>
         )}
         <Stack direction="row" alignItems="center" spacing={1}>
-          <img
+          {import.meta.env.VITE_APP_ORGANIZATION === "2fts" ? (
+            <Box
+              component="img"
+              src={`${import.meta.env.BASE_URL}2fts-crest.png`}
+              alt="2FTS Crest"
+              sx={{ height: "80px", marginRight: "5px", py: 1 }}
+            />
+          ) : (
+          <Box
+            component="img"
             src={`${import.meta.env.BASE_URL}logo.svg`}
             alt="Logo"
-            style={{ height: "40px", marginRight: "10px" }}
-          />
+            sx={{ height: "40px", marginRight: "10px" }}
+          />)}
           <Stack spacing={0} alignItems="flex-start">
-            <Typography variant={isSmallScreen ? "subtitle1" : "h6"}>
-              Strop-Drop
+            <Typography
+              variant={isSmallScreen ? "subtitle1" : "h6"}
+              sx={{ textTransform: "uppercase", fontWeight: "bold", lineHeight: 1.1 }}>
+              {appName}
             </Typography>
             <Typography
               variant="caption"
-              sx={isSmallScreen ? { fontSize: "0.6rem" } : {}}>
-              The Drop-Zone Visualiser - V1.0
+              sx={isSmallScreen ? { fontSize: "0.6rem" } : { lineHeight: 1.1 }}>
+              {appDescription} v{appVersion}
             </Typography>
           </Stack>
         </Stack>
         {isSmallScreen ? (
-          <Button
-            variant="contained"
-            color="warning"
-            sx={{ ml: "auto" }}
-            onClick={() => setShowSearchBar(!showSearchBar)}>
-            <SearchIcon />
-          </Button>
+          <>
+            <Button
+              variant="contained"
+              color="warning"
+              sx={{ ml: "auto" }}
+              onClick={() => setShowSearchBar(!showSearchBar)}>
+              <SearchIcon />
+            </Button>
+            <Button
+              component={Link}
+              to="help"
+              variant="contained"
+              color="info"
+              sx={{ ml: 2 }}>
+              <HelpIcon />
+            </Button>
+          </>
         ) : (
           <Stack
             direction="row"
@@ -162,9 +197,17 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
             <Button
               variant="contained"
               color="warning"
-              sx={{ ml: 2 }}
+              sx={{ ml: 1 }}
               onClick={handleSearch}>
               Go
+            </Button>
+            <Button
+              component={Link}
+              to="help"
+              variant="contained"
+              color="info"
+              sx={{ ml: 2 }}>
+              <HelpIcon />
             </Button>
           </Stack>
         )}
