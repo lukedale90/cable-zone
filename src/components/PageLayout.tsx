@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Box, Container, Typography, Paper } from "@mui/material";
 import Footer from "./Footer";
+import AppBar from "./AppBar";
 
 interface PageLayoutProps {
   title: string;
@@ -11,7 +12,8 @@ interface PageLayoutProps {
 
 const PageLayout = ({ title, subtitle, children, maxWidth = "md" }: PageLayoutProps) => {
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%" }}>
+      <AppBar />
       <Container maxWidth={maxWidth} sx={{ py: 4, flex: 1 }}>
         <Paper elevation={1} sx={{ p: 4 }}>
           <Box sx={{ mb: 4 }}>

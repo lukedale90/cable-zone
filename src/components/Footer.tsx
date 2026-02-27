@@ -24,7 +24,7 @@ const Footer = () => {
           spacing={2}
         >
           <Typography variant="body2" color="text.secondary">
-            © {currentYear} Luke Dale. Licensed under{" "}
+            © {currentYear} Luke Dale. {import.meta.env.VITE_APP_ORGANIZATION === "2fts" && (<>Adapted for 2FTS.</>)} Licensed under{" "}
             <Typography 
               component="a" 
               href="https://github.com/lukedale90/cable-zone/blob/main/LICENSE"

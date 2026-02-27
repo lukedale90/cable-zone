@@ -18,8 +18,8 @@ import { locationOptions, LocationOption } from "../utils/available-sites";
 import { Link } from "react-router-dom";
 
 type HeaderProps = {
-  isSmallScreen: boolean;
-  toggleDrawer: (
+  isSmallScreen?: boolean;
+  toggleDrawer?: (
     open: boolean,
   ) => (event: React.MouseEvent | React.KeyboardEvent) => void;
 };
@@ -132,7 +132,7 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
   return (
     <AppBar position="static">
       <Toolbar>
-        {isSmallScreen && (
+        {isSmallScreen && toggleDrawer && (
           <IconButton
             edge="start"
             color="inherit"
@@ -143,7 +143,7 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
           </IconButton>
         )}
         <Stack direction="row" alignItems="center" spacing={1}>
-          {import.meta.env.VITE_APP_ORGANIZATION ? (
+          {import.meta.env.VITE_APP_ORGANIZATION === "2fts" ? (
             <Box
               component="img"
               src={`${import.meta.env.BASE_URL}2fts-crest.png`}
