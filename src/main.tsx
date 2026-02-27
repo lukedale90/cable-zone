@@ -1,10 +1,28 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from "react-router-dom";
 import './index.css'
 import App from './App.tsx'
 
+document.title = import.meta.env.VITE_APP_NAME || "Default Title";
+
+// Inject Cloudflare token dynamically
+const cloudflareScript = document.querySelector(
+  'script[data-cf-beacon]'
+) as HTMLScriptElement;
+if (cloudflareScript) {
+  cloudflareScript.setAttribute(
+    "data-cf-beacon",
+    JSON.stringify({
+      token: import.meta.env.VITE_CLOUDFLARE_TOKEN || "default-token",
+    })
+  );
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
   </StrictMode>,
 )

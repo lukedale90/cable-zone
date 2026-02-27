@@ -13,16 +13,25 @@ import { useParameters } from "../context/ParametersContext";
 import { Parameters } from "../context/ParametersProvider";
 
 import "leaflet/dist/leaflet.css";
-import { calculateDistance } from "../utils/calculate-distance"; // Import the utility function
-import { calculateStropHeights } from "../utils/calculate-strop-height";
-import { calculateWindGradient } from "../utils/calculate-wind-gradient";
-import { calculateStropDrift } from "../utils/calculate-strop-drift";
-import {
-  calculateDriftCoordinates,
-  calculateIntervalPositions,
-} from "../utils/calculate-drift-coordinates";
+
 import WindDialContainer from "./WindDial";
-import { calculateWindComponents } from "../utils/calculate-wind-components";
+import {
+  calculateAverageDirection,
+  calculateDistance,
+  calculateDriftCoordinates,
+  calculateStropDrift,
+  calculateIntervalPositions,
+  calculateStropHeights,
+  calculateWindComponents,
+  calculateWindGradient,
+} from "../utils";
+import MapKeyContainer from "./MapKey";
+
+type Coordinate = {
+  lat: number;
+  lng: number;
+};
+
 
 const UpdateMapView = ({ center }: { center: LatLngExpression }) => {
   const map = useMap();
@@ -58,18 +67,21 @@ const Map = () => {
   >([]);
   const [driftCoordinates2, setDriftCoordinates2] = React.useState<
     {
-      start: { lat: number; lng: number };
-      drift: { lat: number; lng: number };
+      start: Coordinate;
+      drift: Coordinate;
     }[]
   >([]);
-  const [sausagePolygon, setSausagePolygon] = React.useState<
-    { lat: number; lng: number }[]
-  >([]);
+
+  // const [distanceLabels, setDistanceLabels] = React.useState<
+  //   { distance: number; height: number }[]
+  // >([]);
+
+  const [sausagePolygon, setSausagePolygon] = React.useState<Coordinate[]>([]);
   //const [RWYHeading, setRWYHeading] = React.useState<number>(0);
   // Create a custom yellow circle icon
   const winchIcon = L.divIcon({
     className: "custom-icon",
-    html: `<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+    html: `<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" style="cursor: move;">
              <circle cx="10" cy="10" r="10" fill="yellow" />
            </svg>`,
     iconSize: [20, 20],
@@ -78,8 +90,8 @@ const Map = () => {
 
   const launchIcon = L.divIcon({
     className: "custom-icon",
-    html: `<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg">
-             <circle cx="10" cy="10" r="10" fill="red" />
+    html: `<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" style="cursor: move;">
+             <circle cx="10" cy="10" r="10" fill="white" />
            </svg>`,
     iconSize: [20, 20],
     iconAnchor: [10, 10],
@@ -114,46 +126,42 @@ const Map = () => {
     );
   };
 
-  const averageDirection = (() => {
-    const surfaceDirectionRad =
-      (parameters.surfaceWind.direction * Math.PI) / 180;
-    const twoThousandFtDirectionRad =
-      (parameters.twoThousandFtWind.direction * Math.PI) / 180;
-
-    // Convert directions to vectors
-    const x =
-      Math.cos(surfaceDirectionRad) + Math.cos(twoThousandFtDirectionRad);
-    const y =
-      Math.sin(surfaceDirectionRad) + Math.sin(twoThousandFtDirectionRad);
-
-    // Calculate the average direction in radians
-    const avgDirectionRad = Math.atan2(y, x);
-
-    // Convert back to degrees and normalize to 0-360°
-    return (avgDirectionRad * 180) / Math.PI >= 0
-      ? (avgDirectionRad * 180) / Math.PI
-      : (avgDirectionRad * 180) / Math.PI + 360;
-  })();
+  const averageDirection = React.useMemo(() => {
+    return calculateAverageDirection(
+      parameters.surfaceWind.direction,
+      parameters.twoThousandFtWind.direction,
+    );
+  }, [
+    parameters.surfaceWind.direction,
+    parameters.twoThousandFtWind.direction,
+  ]);
 
   useEffect(() => {
     const distance = calculateDistance(
       parameters.winchLocation,
-      parameters.launchPoint
+      parameters.launchPoint,
     );
+
+    if (distance > 5000) {
+      alert('Alight mate? Launching to the moon are we?');
+    }
 
     const stropHeights = calculateStropHeights(
       distance,
       parameters.releaseHeight,
       parameters.surfaceWind.speed,
-      parameters.customLaunchProfile
+      parameters.customLaunchProfile,
     );
+
+    // const distanceLabels = stropHeights.slice(1); //remove first in the array - don't care about zero
+    // setDistanceLabels(distanceLabels);
 
     const windGradient = calculateWindGradient(
       parameters.surfaceWind.speed,
       parameters.twoThousandFtWind.speed,
       parameters.surfaceWind.direction,
       parameters.twoThousandFtWind.direction,
-      parameters.releaseHeight
+      parameters.releaseHeight,
     );
 
     const stropDrift = calculateStropDrift(
@@ -162,17 +170,15 @@ const Map = () => {
       parameters.stropLength,
       stropHeights,
       windGradient,
-      parameters.safetyBuffer
+      parameters.safetyBuffer,
     );
 
     const intervalPositions = calculateIntervalPositions(
       parameters.winchLocation.lat,
       parameters.winchLocation.lng,
       parameters.launchPoint.lat,
-      parameters.launchPoint.lng
+      parameters.launchPoint.lng,
     );
-
-    console.log('intervalPositions:', intervalPositions);
 
     //reverse Interval positions to match strop heights from launch to winch
     intervalPositions.reverse();
@@ -198,13 +204,13 @@ const Map = () => {
         lat,
         lng,
         minDriftX,
-        minDriftY
+        minDriftY,
       );
       const maxDrift = calculateDriftCoordinates(
         lat,
         lng,
         maxDriftX,
-        maxDriftY
+        maxDriftY,
       );
 
       return { min: minDrift, max: maxDrift };
@@ -214,13 +220,13 @@ const Map = () => {
       (coord: {
         min: { lat: number; lng: number };
         max: { lat: number; lng: number };
-      }) => coord.min
+      }) => coord.min,
     );
     const maxValues = sausageCoordinates.map(
       (coord: {
         min: { lat: number; lng: number };
         max: { lat: number; lng: number };
-      }) => coord.max
+      }) => coord.max,
     );
 
     // Create the polygon by joining min values and reversed max values
@@ -284,7 +290,7 @@ const Map = () => {
     const { headwind } = calculateWindComponents(
       averageSpeed,
       averageDirection,
-      parameters.RWYHeading
+      parameters.RWYHeading,
     );
 
     const windFactor = (headwind * 5.5) / 100 + 1; // Rough linear approximation
@@ -306,7 +312,7 @@ const Map = () => {
     const { headwind, crosswind } = calculateWindComponents(
       parameters.surfaceWind.speed,
       parameters.surfaceWind.direction,
-      parameters.RWYHeading
+      parameters.RWYHeading,
     );
 
     setParameters((prev) => ({
@@ -388,7 +394,7 @@ const Map = () => {
           position={parameters.launchPoint}
           icon={L.divIcon({
             className: "",
-            html: `<div style="background:rgba(255, 0, 0, 0.47);padding:2px 8px;border-radius:4px;border:1px solid #d21919ff;font-size:12px;color:#fff;white-space:nowrap;">
+            html: `<div style="background:rgba(255, 255, 255, 0.47);padding:2px 8px;border-radius:4px;border:1px solid #cdcdcdff;font-size:12px;color:#000;white-space:nowrap;">
               Launch Point
             </div>`,
             iconSize: [90, 24],
@@ -414,7 +420,8 @@ const Map = () => {
             [parameters.winchLocation.lat, parameters.winchLocation.lng],
             [parameters.launchPoint.lat, parameters.launchPoint.lng],
           ]}
-          pathOptions={{ color: "blue", weight: 2 }}
+          pathOptions={{ color: "black", weight: 2 }}
+          interactive={false}
         />
         {/* Heading label */}
         {(() => {
@@ -449,8 +456,8 @@ const Map = () => {
                     className: "",
                     html: `<div style="background:rgba(255,255,255,0.8);padding:2px 6px;border-radius:4px;border:1px solid #1976d2;font-size:12px;color:#1976d2; transform: rotate(${boxHeading}deg); white-space:nowrap;">
                 ${parameters.RWYHeading.toFixed(0).padStart(3, "0")}° ${
-                      parameters.cableLength
-                    }m
+                  parameters.cableLength
+                }m
               </div>`,
                     iconSize: [80, 24],
                     iconAnchor: [40, 12],
@@ -462,17 +469,55 @@ const Map = () => {
           );
         })()}
 
+        {/* {driftCoordinates2.map((coord, index) => {
+
+            console.log('index', index, 'coord', coord)
+
+          if (index === 7) {
+
+            // console.log('index', index)
+            // return null;
+
+          }
+
+          return (
+            <Marker
+              key={index}
+              position={{
+                lat: coord.start.lat,
+                lng: coord.start.lng,
+              }}
+              icon={L.divIcon({
+                className: "custom-icon",
+                html: `<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+               <circle cx="10" cy="10" r="10" fill="blue" />
+             </svg>`,
+                iconSize: [20, 20], // Size of the icon
+                iconAnchor: [10, 10], // Center the icon at the marker's position
+              })}>
+              <Tooltip title={"Test"}>
+                <span>
+                  Distance: {coord.start.lat.toFixed(2)}
+                  <br />
+                  Height: {coord.start.lng.toFixed(2)}
+                </span>
+              </Tooltip>
+            </Marker>
+          );
+        })} */}
         <Polyline
           positions={driftCoordinates.map((coord) => [coord.lat, coord.lng])}
           pathOptions={{ color: "white", weight: 2, dashArray: "5, 10" }}
+          interactive={false}
         />
         <Polygon
           positions={sausagePolygon.map((coord) => [coord.lat, coord.lng])}
           pathOptions={{
             color: "transparent",
-            fillColor: "orange",
+            fillColor: "red",
             fillOpacity: 0.4, // Adjust opacity as needed
           }}
+          interactive={false}
         />
         {driftCoordinates2.map((item, index) => (
           <AnimatedPolyline
@@ -495,7 +540,7 @@ const Map = () => {
               stroke-dasharray: 2, 6;
               animation: dashmove ${Math.max(
                 0.1,
-                2 - (parameters.surfaceWind.speed / 20) * 1.9
+                2 - (parameters.surfaceWind.speed / 20) * 1.9,
               )}s linear infinite;
               /* 0kts = 2s, 20kts+ = 0.1s, linear gradient in between */
               /* Clamp to minimum 0.1s */
@@ -518,17 +563,19 @@ const Map = () => {
               parameters.launchPoint.lng,
             ] as LatLngExpression,
             ...driftCoordinates.map(
-              (coord) => [coord.lat, coord.lng] as LatLngExpression
+              (coord) => [coord.lat, coord.lng] as LatLngExpression,
             ),
           ]}
           pathOptions={{
             color: "rgba(255, 0, 0, 0.3)",
-            fillColor: "red",
-            fillOpacity: 0.2,
+            fillColor: "orange",
+            fillOpacity: 0.25,
           }}
+          interactive={false}
         />
       </MapContainer>
       <WindDialContainer />
+      <MapKeyContainer />
     </div>
   );
 };
