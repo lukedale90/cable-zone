@@ -129,6 +129,7 @@ const SavedScenarios = () => {
         saveScenariosToLocalStorage(updatedScenarios);
         alert("Scenarios imported successfully.");
       } catch (error) {
+        console.error("Error importing scenarios:", error);
         alert("Failed to import scenarios. Please check the file format.");
       }
     };

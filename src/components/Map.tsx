@@ -32,10 +32,6 @@ type Coordinate = {
   lng: number;
 };
 
-type DriftCoordinate = {
-  start: Coordinate;
-  drift: Coordinate;
-};
 
 const UpdateMapView = ({ center }: { center: LatLngExpression }) => {
   const map = useMap();

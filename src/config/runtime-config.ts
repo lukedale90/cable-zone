@@ -1,6 +1,6 @@
 // src/config/runtime-config.ts
 const isProduction = window.location.hostname.includes('github.io');
-const isDevelopment = window.location.hostname === 'localhost';
+// const isDevelopment = window.location.hostname === 'localhost';
 
 export const runtimeConfig = {
   APP_NAME: "Strop Drop",

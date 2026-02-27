@@ -1,4 +1,4 @@
-import { Chip, Stack, Tooltip, Typography } from "@mui/material";
+import { Chip, Stack, Tooltip } from "@mui/material";
 import React from "react";
 import { useParameters } from "../context/ParametersContext";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
