@@ -153,7 +153,7 @@ const Map = () => {
       parameters.customLaunchProfile,
     );
 
-    const distanceLabels = stropHeights.slice(1); //remove first in the array - don't care about zero
+    // const distanceLabels = stropHeights.slice(1); //remove first in the array - don't care about zero
     // setDistanceLabels(distanceLabels);
 
     const windGradient = calculateWindGradient(
