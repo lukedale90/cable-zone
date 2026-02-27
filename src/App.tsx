@@ -9,7 +9,7 @@ const App = () => {
   return (
     <Routes>
       <Route path={`/${import.meta.env.VITE_BASE_URL}`} element={<LandingPage />} />
-      <Route path={`/${import.meta.env.VITE_BASE_URL}/help`} element={<HelpPage />} />
+      <Route path={`/${import.meta.env.VITE_BASE_URL}help`} element={<HelpPage />} />
     </Routes>
   );
 };

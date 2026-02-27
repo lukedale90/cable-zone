@@ -34,7 +34,7 @@ jobs:
         VITE_APP_VERSION: ${{ vars.VITE_APP_VERSION || secrets.VITE_APP_VERSION || '1.1' }}
         VITE_APP_ORGANIZATION: ${{ vars.VITE_APP_ORGANIZATION || secrets.VITE_APP_ORGANIZATION || '' }}
         VITE_DEFAULT_LANGUAGE: ${{ vars.VITE_DEFAULT_LANGUAGE || secrets.VITE_DEFAULT_LANGUAGE || 'en' }}
-        VITE_BASE_URL: ${{ vars.VITE_BASE_URL || secrets.VITE_BASE_URL || '/cable-zone' }}
+        VITE_BASE_URL: ${{ vars.VITE_BASE_URL || secrets.VITE_BASE_URL || '/cable-zone/' }}
         VITE_CLOUDFLARE_TOKEN: ${{ secrets.VITE_CLOUDFLARE_TOKEN }}
       run: npm run build
       
