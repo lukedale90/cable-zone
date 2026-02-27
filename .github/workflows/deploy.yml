@@ -13,6 +13,9 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
     - name: Checkout
@@ -26,29 +29,15 @@ jobs:
         
     - name: Install dependencies
       run: npm ci
-      
-    - name: Set deployment variables
-      id: deploy-vars
-      run: |
-        if [[ "${{ github.repository }}" == "2fts-raf/strop-drop" ]]; then
-          echo "BASE_URL=/strop-drop" >> $GITHUB_ENV
-          echo "APP_NAME=RAF Strop Drop" >> $GITHUB_ENV
-          echo "APP_ORGANIZATION=2fts RAF" >> $GITHUB_ENV
-        else
-          echo "BASE_URL=/cable-zone" >> $GITHUB_ENV
-          echo "APP_NAME=Strop Drop" >> $GITHUB_ENV
-          echo "APP_ORGANIZATION=2fts" >> $GITHUB_ENV
-        fi
         
     - name: Build
       env:
-        VITE_APP_NAME: ${{ env.APP_NAME }}
-        VITE_APP_DESCRIPTION: ${{ secrets.VITE_APP_DESCRIPTION || '"The Drop-Zone Visualiser"' }}
-        VITE_APP_VERSION: ${{ secrets.VITE_APP_VERSION || '1.1' }}
-        VITE_APP_ORGANIZATION: ${{ env.APP_ORGANIZATION }}
-        VITE_ENABLE_ADVANCED_FEATURES: ${{ secrets.VITE_ENABLE_ADVANCED_FEATURES || 'true' }}
-        VITE_DEFAULT_LANGUAGE: ${{ secrets.VITE_DEFAULT_LANGUAGE || 'en' }}
-        VITE_BASE_URL: ${{ env.BASE_URL }}
+        VITE_APP_NAME: ${{ vars.VITE_APP_NAME || secrets.VITE_APP_NAME || 'Strop Drop' }}
+        VITE_APP_DESCRIPTION: ${{ vars.VITE_APP_DESCRIPTION || secrets.VITE_APP_DESCRIPTION || 'The Drop-Zone Visualiser' }}
+        VITE_APP_VERSION: ${{ vars.VITE_APP_VERSION || secrets.VITE_APP_VERSION || '1.1' }}
+        VITE_APP_ORGANIZATION: ${{ vars.VITE_APP_ORGANIZATION || secrets.VITE_APP_ORGANIZATION || '' }}
+        VITE_DEFAULT_LANGUAGE: ${{ vars.VITE_DEFAULT_LANGUAGE || secrets.VITE_DEFAULT_LANGUAGE || 'en' }}
+        VITE_BASE_URL: ${{ vars.VITE_BASE_URL || secrets.VITE_BASE_URL || '/cable-zone' }}
         VITE_CLOUDFLARE_TOKEN: ${{ secrets.VITE_CLOUDFLARE_TOKEN }}
       run: npm run build
       
