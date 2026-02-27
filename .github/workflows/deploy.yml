@@ -28,12 +28,6 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: Debug environment variables
-      run: |
-        echo "VITE_APP_VERSION from vars: ${{ vars.VITE_APP_VERSION }}"
-        echo "VITE_APP_VERSION from secrets: ${{ secrets.VITE_APP_VERSION }}"
-        echo "Final VITE_APP_VERSION will be: ${{ vars.VITE_APP_VERSION || secrets.VITE_APP_VERSION || '1.1.2' }}"
-        
     - name: Set environment variables
       run: |
         echo "VITE_APP_VERSION=${{ vars.VITE_APP_VERSION || secrets.VITE_APP_VERSION || '1.1.2' }}" >> $GITHUB_ENV
