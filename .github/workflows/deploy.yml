@@ -26,15 +26,29 @@ jobs:
         
     - name: Install dependencies
       run: npm ci
+    
+    - name: Debug environment variables
+      run: |
+        echo "VITE_APP_VERSION from vars: ${{ vars.VITE_APP_VERSION }}"
+        echo "VITE_APP_VERSION from secrets: ${{ secrets.VITE_APP_VERSION }}"
+        echo "Final VITE_APP_VERSION will be: ${{ vars.VITE_APP_VERSION || secrets.VITE_APP_VERSION || '1.1.2' }}"
+        
+    - name: Set environment variables
+      run: |
+        echo "VITE_APP_VERSION=${{ vars.VITE_APP_VERSION || secrets.VITE_APP_VERSION || '1.1.2' }}" >> $GITHUB_ENV
+        echo "VITE_APP_NAME=${{ vars.VITE_APP_NAME || secrets.VITE_APP_NAME || 'Strop Drop' }}" >> $GITHUB_ENV
+        echo "VITE_APP_DESCRIPTION=${{ vars.VITE_APP_DESCRIPTION || secrets.VITE_APP_DESCRIPTION || 'The Drop-Zone Visualiser' }}" >> $GITHUB_ENV
+        echo "VITE_APP_ORGANIZATION=${{ vars.VITE_APP_ORGANIZATION || secrets.VITE_APP_ORGANIZATION || '2fts' }}" >> $GITHUB_ENV
+        echo "VITE_BASE_URL=${{ vars.VITE_BASE_URL || secrets.VITE_BASE_URL || '/cable-zone/' }}" >> $GITHUB_ENV
         
     - name: Build
       env:
-        VITE_APP_NAME: ${{ vars.VITE_APP_NAME || secrets.VITE_APP_NAME || 'Strop Drop' }}
-        VITE_APP_DESCRIPTION: ${{ vars.VITE_APP_DESCRIPTION || secrets.VITE_APP_DESCRIPTION || 'The Drop-Zone Visualiser' }}
-        VITE_APP_VERSION: ${{ vars.VITE_APP_VERSION || secrets.VITE_APP_VERSION || '1.1.2' }}
-        VITE_APP_ORGANIZATION: ${{ vars.VITE_APP_ORGANIZATION || secrets.VITE_APP_ORGANIZATION || '' }}
+        VITE_APP_NAME: ${{ env.VITE_APP_NAME }}
+        VITE_APP_DESCRIPTION: ${{ env.VITE_APP_DESCRIPTION }}
+        VITE_APP_VERSION: ${{ env.VITE_APP_VERSION }}
+        VITE_APP_ORGANIZATION: ${{ env.VITE_APP_ORGANIZATION }}
         VITE_DEFAULT_LANGUAGE: ${{ vars.VITE_DEFAULT_LANGUAGE || secrets.VITE_DEFAULT_LANGUAGE || 'en' }}
-        VITE_BASE_URL: ${{ vars.VITE_BASE_URL || secrets.VITE_BASE_URL || '/cable-zone/' }}
+        VITE_BASE_URL: ${{ env.VITE_BASE_URL }}
         VITE_CLOUDFLARE_TOKEN: ${{ secrets.VITE_CLOUDFLARE_TOKEN }}
       run: npm run build
       
