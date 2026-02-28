@@ -2,6 +2,7 @@ import { Chip, Stack, Tooltip } from "@mui/material";
 import React from "react";
 import { useParameters } from "../context/ParametersContext";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 // interface WindDialContainerProps {
 //   surfaceWind: {
 //     speed: number;
@@ -31,8 +32,22 @@ const RWYDial: React.FC<RWYDialProps> = ({ direction }) => {
         height="80"
         xmlns="http://www.w3.org/2000/svg"
         style={{ transform: `rotate(${direction}deg)` }}>
-        <line x1="20" y1="8" x2="20" y2="72" stroke="#00000050" strokeWidth="8" />
-        <line x1="20" y1="10" x2="20" y2="70" stroke="#ffffff65" strokeWidth="1" />
+        <line
+          x1="20"
+          y1="8"
+          x2="20"
+          y2="72"
+          stroke="#00000050"
+          strokeWidth="8"
+        />
+        <line
+          x1="20"
+          y1="10"
+          x2="20"
+          y2="70"
+          stroke="#ffffff65"
+          strokeWidth="1"
+        />
       </svg>
     </div>
   );
@@ -139,16 +154,24 @@ const WindDialContainer: React.FC = () => {
         <CrossWindDial crossWind={crossWindComponent} />
         <Tooltip title="Surface Wind">
           <Chip
-            label={`${surfaceDirectionStr}/${surfaceSpeed}`}
+            label={`${surfaceDirectionStr}° ${surfaceSpeed}kts`}
             variant="filled"
             color="primary"
           />
         </Tooltip>
         <Tooltip title="2000ft Wind">
           <Chip
-            label={`${twoKDirectionStr}/${twoKSpeed}`}
+            label={`${twoKDirectionStr}° ${twoKSpeed}kts`}
             variant="filled"
             color="error"
+          />
+        </Tooltip>
+        <Tooltip title="Launch Height">
+          <Chip
+            label={`${parameters.releaseHeight} ft`}
+            variant="filled"
+            color="default"
+            icon={<FlightTakeoffIcon />}
           />
         </Tooltip>
       </Stack>

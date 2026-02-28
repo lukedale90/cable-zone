@@ -172,21 +172,25 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
         </Stack>
         {isSmallScreen ? (
           <>
-            <Button
-              variant="contained"
-              color="warning"
+            <IconButton
+              color={showSearchBar ? "warning" : "inherit"}
+              size="small"
               sx={{ ml: "auto" }}
-              onClick={() => setShowSearchBar(!showSearchBar)}>
+              onClick={() => setShowSearchBar(!showSearchBar)}
+              aria-label="toggle search"
+            >
               <SearchIcon />
-            </Button>
-            <Button
+            </IconButton>
+            <IconButton
               component={Link}
               to="help"
-              variant="contained"
-              color="info"
-              sx={{ ml: 2 }}>
+              size="small"
+              color="inherit"
+              sx={{ ml: 1 }}
+              aria-label="help"
+            >
               <HelpIcon />
-            </Button>
+            </IconButton>
           </>
         ) : (
           <Stack

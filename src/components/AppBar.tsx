@@ -1,16 +1,15 @@
 import React from "react";
-import { AppBar as MuiAppBar, Toolbar, Typography, Stack, Box, Button } from "@mui/material";
+import { AppBar as MuiAppBar, Toolbar, Typography, Stack, Box, Button, IconButton, useMediaQuery } from "@mui/material";
 import { Link } from "react-router-dom";
+import DirectionsIcon from '@mui/icons-material/Directions';
 
-interface AppBarProps {
-  isSmallScreen?: boolean;
-}
-
-const AppBar: React.FC<AppBarProps> = ({ isSmallScreen = false }) => {
+const AppBar: React.FC = () => {
   const appName = import.meta.env.VITE_APP_NAME;
   const appVersion = import.meta.env.VITE_APP_VERSION;
   const appDescription = import.meta.env.VITE_APP_DESCRIPTION;
   const appOrg = import.meta.env.VITE_APP_ORGANIZATION;
+
+  const isSmallScreen = useMediaQuery("(max-width: 768px)");
 
   return (
     <MuiAppBar position="static">
@@ -45,9 +44,20 @@ const AppBar: React.FC<AppBarProps> = ({ isSmallScreen = false }) => {
           </Stack>
         </Stack>
         {/* back to app button */}
-        <Button color="warning" variant="contained" component={Link} to={import.meta.env.BASE_URL} sx={{ ml: "auto" }}>
-          Back to Map
-        </Button>
+        {isSmallScreen ? (
+          <IconButton
+            color="inherit"
+            size="small"
+            component={Link}
+            to={import.meta.env.BASE_URL}
+            sx={{ ml: "auto" }}>
+            <DirectionsIcon />
+          </IconButton>
+        ) : (
+          <Button color="warning" variant="contained" size="small" component={Link} to={import.meta.env.BASE_URL} sx={{ ml: "auto" }}>
+            Back to Map
+          </Button>
+        )}
       </Toolbar>
     </MuiAppBar>
   );

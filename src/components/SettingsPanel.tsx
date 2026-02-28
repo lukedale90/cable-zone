@@ -173,6 +173,7 @@ const SettingsPanel = () => {
                   max={360}
                   step={5}
                   valueLabelDisplay="auto"
+                  valueLabelFormat={(value) => `${value}°`}
                 />
                 <Slider
                   value={parameters.surfaceWind.speed}
@@ -185,6 +186,7 @@ const SettingsPanel = () => {
                   min={0}
                   max={50}
                   valueLabelDisplay="auto"
+                  valueLabelFormat={(value) => `${value} kts`}
                 />
               </Stack>
             </Stack>
@@ -214,6 +216,7 @@ const SettingsPanel = () => {
                   max={360}
                   step={5}
                   valueLabelDisplay="auto"
+                  valueLabelFormat={(value) => `${value}°`}
                 />
                 <Slider
                   color="error"
@@ -227,6 +230,7 @@ const SettingsPanel = () => {
                   min={0}
                   max={50}
                   valueLabelDisplay="auto"
+                  valueLabelFormat={(value) => `${value} kts`}
                 />
               </Stack>
             </Stack>
