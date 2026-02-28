@@ -55,7 +55,7 @@ const AppBar: React.FC = () => {
           </IconButton>
         ) : (
           <Button color="warning" variant="contained" size="small" component={Link} to={import.meta.env.BASE_URL} sx={{ ml: "auto" }}>
-            Back to Map
+            Back to App
           </Button>
         )}
       </Toolbar>
