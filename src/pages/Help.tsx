@@ -23,15 +23,15 @@ const HelpPage = () => {
           <Typography variant="h6">Getting Started</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography paragraph>
-            The Strop Drop Visualiser helps you calculate and visualize drop zones for aerial operations. 
+          <Typography >
+            The Strop Drop Visualiser helps you calculate and visualize strop drop zones for winch launch operations. 
             Use the settings panel to configure your parameters and view the results on the interactive map.
           </Typography>
           <List>
             <ListItem>
               <ListItemText 
                 primary="Set Your Parameters" 
-                secondary="Configure aircraft speed, altitude, wind conditions, and other variables in the settings panel"
+                secondary="Configure expected launch height, wind speeds, and other variables in the settings panel"
               />
             </ListItem>
             <ListItem>
@@ -50,7 +50,7 @@ const HelpPage = () => {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion>
+      {/* <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography variant="h6">Map Controls</Typography>
         </AccordionSummary>
@@ -83,7 +83,7 @@ const HelpPage = () => {
           <Typography variant="h6">Settings Panel</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography paragraph>
+          <Typography >
             The settings panel allows you to configure all parameters for your drop calculations:
           </Typography>
           <List>
@@ -114,7 +114,7 @@ const HelpPage = () => {
           <Typography variant="h6">Saved Scenarios</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography paragraph>
+          <Typography >
             Manage your saved configurations for quick access to frequently used scenarios:
           </Typography>
           <List>
@@ -138,7 +138,7 @@ const HelpPage = () => {
             </ListItem>
           </List>
         </AccordionDetails>
-      </Accordion>
+      </Accordion> */}
 
       <Divider sx={{ my: 3 }} />
 

@@ -60,7 +60,7 @@ const Footer = () => {
             <Chip label={`v${appVersion}`} size="small" variant="outlined" />
             <Typography
               component={Link}
-              to="help"
+              to={`${import.meta.env.BASE_URL}help`}
               variant="body2"
               color="primary"
               sx={{
@@ -71,7 +71,7 @@ const Footer = () => {
             </Typography>
             <Typography
               component={Link}
-              to="changelog"
+              to={`${import.meta.env.BASE_URL}changelog`}
               variant="body2"
               color="primary"
               sx={{
