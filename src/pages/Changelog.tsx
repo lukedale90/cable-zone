@@ -22,32 +22,14 @@ const changelogData: ChangelogEntry[] = [
   {
     version: "1.1.0",
     date: "2026-02-27",
-    type: "minor",
-    changes: [
-      { category: "added", description: "Help page with comprehensive documentation" },
-      { category: "added", description: "Changelog page to track version history" },
-      { category: "added", description: "Import/Export functionality for saved scenarios" },
-      { category: "added", description: "GitHub Actions deployment workflow" },
-      { category: "changed", description: "Improved map performance with optimized rendering" },
-      { category: "fixed", description: "Environment variable handling for different deployments" }
-    ]
-  },
-  {
-    version: "1.0.0",
-    date: "2026-02-20",
     type: "major",
     changes: [
-      { category: "added", description: "Initial release of Strop Drop Visualiser" },
-      { category: "added", description: "Interactive map with drop zone calculations" },
-      { category: "added", description: "Settings panel for parameter configuration" },
-      { category: "added", description: "Saved scenarios functionality" },
-      { category: "added", description: "Wind dial component for wind visualization" },
-      { category: "added", description: "Multiple map layers and controls" }
+      { category: "added", description: "Initial Release" },
     ]
-  }
+  },
 ];
 
-const getCategoryColor = (category: string) => {
+const getCategoryColor = (category: ChangelogEntry["changes"][number]["category"]): "success" | "info" | "warning" | "error" | "default" => {
   switch (category) {
     case "added": return "success";
     case "changed": return "info";
@@ -79,7 +61,7 @@ const ChangelogPage = () => {
               <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
                 <Chip 
                   label={`v${entry.version}`} 
-                  color={getVersionColor(entry.type) as any}
+                  color={getVersionColor(entry.type)}
                   variant="filled"
                 />
                 <Typography variant="body2" color="text.secondary">
@@ -93,7 +75,7 @@ const ChangelogPage = () => {
                     <Chip
                       label={change.category.toUpperCase()}
                       size="small"
-                      color={getCategoryColor(change.category) as any}
+                      color={getCategoryColor(change.category)}
                       sx={{ minWidth: 80, fontSize: "0.7rem" }}
                     />
                     <Typography variant="body2" sx={{ flex: 1, pt: 0.25 }}>

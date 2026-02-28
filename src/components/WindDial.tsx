@@ -1,4 +1,4 @@
-import { Chip, Stack, Tooltip } from "@mui/material";
+import { Chip, Stack, Tooltip, useMediaQuery } from "@mui/material";
 import React from "react";
 import { useParameters } from "../context/ParametersContext";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -17,58 +17,77 @@ import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 interface WindDialProps {
   direction: number;
   color: string;
+  size?: number; // Optional size prop, defaults to 40
 }
 
 interface RWYDialProps {
   direction: number;
+  size?: number; // Optional size prop, defaults to 40
 }
 
-const RWYDial: React.FC<RWYDialProps> = ({ direction }) => {
-  //A grey rectangle with a white center line
+const RWYDial: React.FC<RWYDialProps> = ({ direction, size = 40 }) => {
+  const height = size * 2; // Maintain 1:2 aspect ratio
+  const centerX = size / 2;
+  const strokeWidth = size / 5;
+  const innerStrokeWidth = 1;
+  
   return (
-    <div>
-      <svg
-        width="40"
-        height="80"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ transform: `rotate(${direction}deg)` }}>
-        <line
-          x1="20"
-          y1="8"
-          x2="20"
-          y2="72"
-          stroke="#00000050"
-          strokeWidth="8"
-        />
-        <line
-          x1="20"
-          y1="10"
-          x2="20"
-          y2="70"
-          stroke="#ffffff65"
-          strokeWidth="1"
-        />
-      </svg>
-    </div>
+    <svg
+      width={size}
+      height={height}
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ transform: `rotate(${direction}deg)` }}>
+      <line 
+        x1={centerX} 
+        y1={height * 0.1} 
+        x2={centerX} 
+        y2={height * 0.9} 
+        stroke="#00000050" 
+        strokeWidth={strokeWidth} 
+      />
+      <line
+        x1={centerX}
+        y1={height * 0.125}
+        x2={centerX}
+        y2={height * 0.875}
+        stroke="#ffffff65"
+        strokeWidth={innerStrokeWidth}
+      />
+    </svg>
   );
 };
 
-const WindDial: React.FC<WindDialProps> = ({ direction, color }) => {
+const WindDial: React.FC<WindDialProps> = ({ direction, color, size = 40 }) => {
+  const height = size * 2; // Maintain 1:2 aspect ratio
+  const centerX = size / 2;
+  const strokeWidth = size / 13;
+  const arrowSize = size / 10;
+  
   return (
-    <div>
-      <svg
-        width="40"
-        height="80"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ transform: `rotate(${direction}deg)` }}>
-        <line x1="20" y1="8" x2="20" y2="72" stroke={color} strokeWidth="3" />
-        <polygon points="20,76 16,66 24,66" fill={color} />
-      </svg>
-    </div>
+    <svg
+      width={size}
+      height={height}
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ transform: `rotate(${direction}deg)` }}>
+      <line 
+        x1={centerX} 
+        y1={height * 0.1} 
+        x2={centerX} 
+        y2={height * 0.9} 
+        stroke={color} 
+        strokeWidth={strokeWidth} 
+      />
+      <polygon 
+        points={`${centerX},${height * 0.95} ${centerX - arrowSize},${height * 0.825} ${centerX + arrowSize},${height * 0.825}`} 
+        fill={color} 
+      />
+    </svg>
   );
 };
 
-const CrossWindDial: React.FC<{ crossWind: number }> = ({ crossWind }) => {
+const CrossWindDial: React.FC<{
+  crossWind: number;
+}> = ({ crossWind }) => {
   //if a positive crosswind, arrow points right, if negative points left
   const direction = crossWind >= 0 ? 270 : 90;
   const color = "white";
@@ -80,6 +99,8 @@ const CrossWindDial: React.FC<{ crossWind: number }> = ({ crossWind }) => {
         label={`${speed} kt`}
         variant="filled"
         color="success"
+        sx={{ flexGrow: 1 }}
+        size="small"
         icon={
           <ArrowUpwardIcon
             style={{
@@ -108,72 +129,114 @@ const WindDialContainer: React.FC = () => {
   const surfaceDirectionStr = surfaceDirection.toString().padStart(3, "0");
   const twoKDirectionStr = twoKDirection.toString().padStart(3, "0");
 
+  const isSmallScreen = useMediaQuery("(max-width: 768px)"); // iPad landscape width is 1024px
+
   return (
     <div
       style={{
         position: "absolute",
-        top: "10px",
-        right: "10px",
-        minWidth: "100px",
+        top: isSmallScreen ? "unset" : "10px",
+        bottom: isSmallScreen ? "60px" : "unset",
+        right: isSmallScreen ? "unset" : "10px",
+        left: isSmallScreen ? "10px" : "unset",
+        width: isSmallScreen ? "calc(100% - 20px)" : "auto",
         zIndex: 1000,
         backgroundColor: "#ffffff94",
-        padding: "5px",
-        borderRadius: "20px",
-        alignItems: "center",
+        borderRadius: "8px",
+        padding: 10,
       }}>
-      <div style={{ position: "relative", padding: "5px", height: "100px" }}>
+      <Stack
+        direction={isSmallScreen ? "row" : "column"}
+        spacing={0}
+        alignItems="center"
+        justifyContent={isSmallScreen ? "space-between" : "center"}>
         <div
           style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            textAlign: "center",
+            position: "relative",
+            padding: "0px",
+            height: isSmallScreen ? "60px" : "100px",
+            width: isSmallScreen ? "150px" : "100%",
+            // minWidth: isSmallScreen ? "100%" : "auto"
           }}>
-          <RWYDial direction={parameters.RWYHeading} />
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              textAlign: "center",
+            }}>
+            <RWYDial 
+              direction={parameters.RWYHeading} 
+              size={isSmallScreen ? 30 : 40}
+            />
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              textAlign: "center",
+            }}>
+            <WindDial 
+              direction={surfaceDirection} 
+              color="blue" 
+              size={isSmallScreen ? 30 : 40}
+            />
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              textAlign: "center",
+            }}>
+            <WindDial 
+              direction={twoKDirection} 
+              color="red" 
+              size={isSmallScreen ? 30 : 40}
+            />
+          </div>
         </div>
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            textAlign: "center",
+        <Stack
+          spacing={1}
+          direction={isSmallScreen ? "row" : "column"}
+          flexWrap={isSmallScreen ? "wrap" : "nowrap"}
+          sx={{
+            maxWidth: isSmallScreen ? "calc(100% - 140px)" : "auto",
+            gap: isSmallScreen ? 1 : 0,
           }}>
-          <WindDial direction={surfaceDirection} color="blue" />
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            textAlign: "center",
-          }}>
-          <WindDial direction={twoKDirection} color="red" />
-        </div>
-      </div>
-      <Stack spacing={1}>
-        <CrossWindDial crossWind={crossWindComponent} />
-        <Tooltip title="Surface Wind">
-          <Chip
-            label={`${surfaceDirectionStr}° ${surfaceSpeed}kts`}
-            variant="filled"
-            color="primary"
+          <Tooltip title="Surface Wind">
+            <Chip
+              label={`${surfaceDirectionStr}° ${surfaceSpeed}kts`}
+              variant="filled"
+              color="primary"
+              sx={{ flexGrow: 1 }}
+              size="small"
+            />
+          </Tooltip>
+          <Tooltip title="2000ft Wind">
+            <Chip
+              label={`${twoKDirectionStr}° ${twoKSpeed}kts`}
+              variant="filled"
+              color="error"
+              sx={{ flexGrow: 1 }}
+              size="small"
+            />
+          </Tooltip>
+          <CrossWindDial
+            crossWind={crossWindComponent}
           />
-        </Tooltip>
-        <Tooltip title="2000ft Wind">
-          <Chip
-            label={`${twoKDirectionStr}° ${twoKSpeed}kts`}
-            variant="filled"
-            color="error"
-          />
-        </Tooltip>
-        <Tooltip title="Launch Height">
-          <Chip
-            label={`${parameters.releaseHeight} ft`}
-            variant="filled"
-            color="default"
-            icon={<FlightTakeoffIcon />}
-          />
-        </Tooltip>
+          <Tooltip title="Launch Height">
+            <Chip
+              label={`${parameters.releaseHeight} ft`}
+              variant="filled"
+              color="default"
+              sx={{ flexGrow: 1 }}
+              size="small"
+              icon={<FlightTakeoffIcon />}
+            />
+          </Tooltip>
+        </Stack>
       </Stack>
     </div>
   );
