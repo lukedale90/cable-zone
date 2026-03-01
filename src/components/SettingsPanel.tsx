@@ -25,6 +25,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import { calculateTerminalVelocity } from "../utils/calculate-strop-drift";
 import LaunchProfileControl from "./LaunchProfileControl";
 import SavedScenarios from "./savedScenarios";
+import { config } from '../config/env';
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -53,7 +54,7 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
 const SettingsPanel = () => {
   const { parameters, setParameters, resetStropParameters } = useParameters();
 
-  const appOrg = import.meta.env.VITE_APP_ORGANIZATION;
+  const appOrg = config.APP_ORGANIZATION;
 
   const handleChange = (key: string, value: string | number | object) => {
     setParameters((prev) => ({

@@ -3,8 +3,9 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from "react-router-dom";
 import './index.css'
 import App from './App.tsx'
+import { config } from './config/env';
 
-document.title = import.meta.env.VITE_APP_NAME || "Default Title";
+document.title = config.APP_NAME || "Default Title";
 
 // Inject Cloudflare token dynamically
 const cloudflareScript = document.querySelector(
@@ -14,7 +15,7 @@ if (cloudflareScript) {
   cloudflareScript.setAttribute(
     "data-cf-beacon",
     JSON.stringify({
-      token: import.meta.env.VITE_CLOUDFLARE_TOKEN || "default-token",
+      token: config.CLOUDFLARE_TOKEN || "default-token",
     })
   );
 }

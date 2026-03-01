@@ -36,10 +36,11 @@ const deploymentConfig = getDeploymentConfig();
 export const config = {
   APP_NAME: import.meta.env.VITE_APP_NAME || deploymentConfig.APP_NAME,
   APP_DESCRIPTION: import.meta.env.VITE_APP_DESCRIPTION || "The Drop-Zone Visualiser",
-  APP_VERSION: import.meta.env.VITE_APP_VERSION || "1.1.1",
+  APP_VERSION: 1.1,
   APP_ORGANIZATION: import.meta.env.VITE_APP_ORGANIZATION || deploymentConfig.APP_ORGANIZATION,
   ENABLE_ADVANCED_FEATURES: import.meta.env.VITE_ENABLE_ADVANCED_FEATURES === 'true' || true,
   DEFAULT_LANGUAGE: import.meta.env.VITE_DEFAULT_LANGUAGE || "en",
   BASE_URL: import.meta.env.VITE_BASE_URL || deploymentConfig.BASE_URL,
   CLOUDFLARE_TOKEN: import.meta.env.VITE_CLOUDFLARE_TOKEN || "",
+  CROSSWIND_LIMIT: 11,
 } as const;

@@ -1,9 +1,10 @@
 import { Box, Typography, Container, Stack, Chip } from "@mui/material";
 import { Link } from "react-router-dom";
+import { config } from '../config/env';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const appVersion = import.meta.env.VITE_APP_VERSION || "N/A";
+  const appVersion = config.APP_VERSION || "N/A";
 
   return (
     <Box
@@ -37,14 +38,14 @@ const Footer = () => {
             </Typography>
             .
           </Typography>
-          {import.meta.env.VITE_APP_ORGANIZATION === "2fts" && (
+          {config.APP_ORGANIZATION === "2fts" && (
             <Stack direction="row" alignItems="center" spacing={1}>
               <Typography variant="body2" color="text.secondary">
                 Adapted for 2FTS RAF
               </Typography>
               <Box
                 component="img"
-                src={`${import.meta.env.BASE_URL}2fts-crest.png`}
+                src={`${config.BASE_URL}2fts-crest.png`}
                 alt="2FTS Logo"
                 sx={{
                   height: 24,
@@ -60,7 +61,7 @@ const Footer = () => {
             <Chip label={`v${appVersion}`} size="small" variant="outlined" />
             <Typography
               component={Link}
-              to={`${import.meta.env.BASE_URL}help`}
+              to={`${config.BASE_URL}help`}
               variant="body2"
               color="primary"
               sx={{
@@ -71,7 +72,7 @@ const Footer = () => {
             </Typography>
             <Typography
               component={Link}
-              to={`${import.meta.env.BASE_URL}changelog`}
+              to={`${config.BASE_URL}changelog`}
               variant="body2"
               color="primary"
               sx={{
