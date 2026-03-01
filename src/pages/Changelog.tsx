@@ -25,6 +25,7 @@ const changelogData: ChangelogEntry[] = [
     type: "major",
     changes: [
       { category: "added", description: "Initial Release" },
+      { category: "added", description: "Crosswind Indicator highlights amber when above 11kts" },
     ]
   },
 ];

@@ -3,6 +3,7 @@ import React from "react";
 import { useParameters } from "../context/ParametersContext";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
+import { config } from "../config/env";
 // interface WindDialContainerProps {
 //   surfaceWind: {
 //     speed: number;
@@ -92,22 +93,25 @@ const CrossWindDial: React.FC<{
   const direction = crossWind >= 0 ? 270 : 90;
   const color = "white";
   const speed = Math.abs(crossWind);
+  const limit = config.CROSSWIND_LIMIT;
 
   return (
     <Tooltip title="Surface Crosswind Component">
       <Chip
         label={`${speed} kt`}
         variant="filled"
-        color="success"
+        color={speed > limit ? "warning" : "success"}
         sx={{ flexGrow: 1 }}
         size="small"
         icon={
-          <ArrowUpwardIcon
-            style={{
-              transform: `rotate(${direction}deg)`,
-              color: color,
-            }}
-          />
+          speed > 0 ? (
+            <ArrowUpwardIcon
+              style={{
+                transform: `rotate(${direction}deg)`,
+                color: color,
+              }}
+            />
+          ) : undefined
         }
       />
     </Tooltip>

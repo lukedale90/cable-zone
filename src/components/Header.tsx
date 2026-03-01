@@ -16,6 +16,7 @@ import HelpIcon from "@mui/icons-material/Help";
 import { useParameters } from "../context/ParametersContext";
 import { locationOptions, LocationOption } from "../utils/available-sites";
 import { Link } from "react-router-dom";
+import { config } from '../config/env';
 
 type HeaderProps = {
   isSmallScreen?: boolean;
@@ -32,10 +33,10 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
     useState<LocationOption | null>(null);
   const [showSearchBar, setShowSearchBar] = useState(false);
 
-  const appName = import.meta.env.VITE_APP_NAME;
-  const appVersion = import.meta.env.VITE_APP_VERSION;
-  const appDescription = import.meta.env.VITE_APP_DESCRIPTION;
-  const appOrg = import.meta.env.VITE_APP_ORGANIZATION;
+  const appName = config.APP_NAME;
+  const appVersion = config.APP_VERSION;
+  const appDescription = config.APP_DESCRIPTION;
+  const appOrg = config.APP_ORGANIZATION;
 
   //filter the location options to just 2FTS if the organisation is 2fts
   const filteredLocationOptions =
@@ -143,24 +144,24 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
           </IconButton>
         )}
         <Stack direction="row" alignItems="center" spacing={1}>
-          {import.meta.env.VITE_APP_ORGANIZATION === "2fts" ? (
+          {config.APP_ORGANIZATION === "2fts" ? (
             <Box
               component="img"
-              src={`${import.meta.env.BASE_URL}2fts-crest.png`}
+              src={`${config.BASE_URL}2fts-crest.png`}
               alt="2FTS Crest"
               sx={{ height: "80px", marginRight: "5px", py: 1 }}
             />
           ) : (
           <Box
             component="img"
-            src={`${import.meta.env.BASE_URL}logo.svg`}
+            src={`${config.BASE_URL}logo.svg`}
             alt="Logo"
             sx={{ height: "40px", marginRight: "10px" }}
           />)}
           <Stack spacing={0} alignItems="flex-start">
             <Typography
               component={Link}
-              to={`${import.meta.env.BASE_URL}`}
+              to={`${config.BASE_URL}`}
               variant={isSmallScreen ? "subtitle1" : "h6"}
               sx={{
               textTransform: "uppercase",

@@ -3,6 +3,7 @@ import { launchProfile } from "../utils/launch-profile";
 import Slider from "@mui/material/Slider";
 import { Alert, Button, Chip, Stack, Typography } from "@mui/material";
 import { useParameters } from "../context/ParametersContext";
+import { config } from '../config/env';
 
 const LaunchProfileControl = ({
   activeWind,
@@ -18,7 +19,7 @@ const LaunchProfileControl = ({
   const [editMode, setEditMode] = useState<boolean>(false);
   const { parameters, setParameters } = useParameters();
 
-  const appOrganization = import.meta.env.VITE_APP_ORGANIZATION;
+  const appOrganization = config.APP_ORGANIZATION;
 
   const handleSliderChange = (dataIndex: number, value: number) => {
     const dataArray = [];
