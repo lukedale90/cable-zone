@@ -195,17 +195,23 @@ const SavedScenarios = () => {
         will not cause data loss, but clearing cookies / session data will
         result in a loss of saved scenarios!
       </Alert>
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
         <Button
           variant="contained"
           color="primary"
+          size="small"
+          sx={{ flexGrow: 1 }}
           startIcon={<DownloadIcon />}
-          onClick={downloadScenarios}>
+          onClick={downloadScenarios}
+          component="label">
+            
           Download Scenarios
         </Button>
         <Button
           variant="contained"
           color="secondary"
+          size="small"
+          sx={{ flexGrow: 1 }}
           startIcon={<UploadIcon />}
           component="label">
           Import Scenarios
@@ -224,7 +230,7 @@ const SavedScenarios = () => {
             }}
           />
         </Button>
-      </Box>
+      </Stack>
     </Stack>
   );
 };

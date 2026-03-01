@@ -20,7 +20,7 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
-    version: "1.1.0",
+    version: "1.1",
     date: "2026-02-27",
     type: "major",
     changes: [
@@ -41,9 +41,9 @@ const getCategoryColor = (category: ChangelogEntry["changes"][number]["category"
 
 const getVersionColor = (type: string) => {
   switch (type) {
-    case "major": return "error";
-    case "minor": return "warning";
-    case "patch": return "success";
+    case "major": return "success";
+    case "minor": return "info";
+    case "patch": return "warning";
     default: return "default";
   }
 };

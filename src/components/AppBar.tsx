@@ -1,7 +1,16 @@
 import React from "react";
-import { AppBar as MuiAppBar, Toolbar, Typography, Stack, Box, Button, IconButton, useMediaQuery } from "@mui/material";
+import {
+  AppBar as MuiAppBar,
+  Toolbar,
+  Typography,
+  Stack,
+  Box,
+  Button,
+  IconButton,
+  useMediaQuery,
+} from "@mui/material";
 import { Link } from "react-router-dom";
-import DirectionsIcon from '@mui/icons-material/Directions';
+import DirectionsIcon from "@mui/icons-material/Directions";
 
 const AppBar: React.FC = () => {
   const appName = import.meta.env.VITE_APP_NAME;
@@ -32,8 +41,20 @@ const AppBar: React.FC = () => {
           )}
           <Stack spacing={0} alignItems="flex-start">
             <Typography
+              component={Link}
+              to={`${import.meta.env.BASE_URL}`}
               variant={isSmallScreen ? "subtitle1" : "h6"}
-              sx={{ textTransform: "uppercase", fontWeight: "bold", lineHeight: 1.1 }}>
+              sx={{
+                textTransform: "uppercase",
+                fontWeight: "bold",
+                lineHeight: 1.1,
+                textDecoration: "none",
+                color: "inherit",
+                "&:hover": {
+                  textDecoration: "none",
+                  color: "inherit",
+                },
+              }}>
               {appName}
             </Typography>
             <Typography
@@ -54,7 +75,13 @@ const AppBar: React.FC = () => {
             <DirectionsIcon />
           </IconButton>
         ) : (
-          <Button color="warning" variant="contained" size="small" component={Link} to={import.meta.env.BASE_URL} sx={{ ml: "auto" }}>
+          <Button
+            color="warning"
+            variant="contained"
+            size="small"
+            component={Link}
+            to={import.meta.env.BASE_URL}
+            sx={{ ml: "auto" }}>
             Back
           </Button>
         )}
