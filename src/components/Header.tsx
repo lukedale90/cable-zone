@@ -159,8 +159,20 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
           />)}
           <Stack spacing={0} alignItems="flex-start">
             <Typography
+              component={Link}
+              to={`${import.meta.env.BASE_URL}`}
               variant={isSmallScreen ? "subtitle1" : "h6"}
-              sx={{ textTransform: "uppercase", fontWeight: "bold", lineHeight: 1.1 }}>
+              sx={{
+              textTransform: "uppercase",
+              fontWeight: "bold",
+              lineHeight: 1.1,
+              textDecoration: "none",
+              color: "inherit",
+              '&:hover': {
+                textDecoration: 'none',
+                color: 'inherit',
+              },
+              }}>
               {appName}
             </Typography>
             <Typography

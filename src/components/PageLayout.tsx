@@ -10,7 +10,7 @@ interface PageLayoutProps {
   maxWidth?: "xs" | "sm" | "md" | "lg" | "xl";
 }
 
-const PageLayout = ({ title, subtitle, children, maxWidth = "md" }: PageLayoutProps) => {
+const PageLayout = ({ title, subtitle, children, maxWidth = "xl" }: PageLayoutProps) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%" }}>
       <AppBar />
