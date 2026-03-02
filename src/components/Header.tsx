@@ -16,7 +16,8 @@ import HelpIcon from "@mui/icons-material/Help";
 import { useParameters } from "../context/ParametersContext";
 import { locationOptions, LocationOption } from "../utils/available-sites";
 import { Link } from "react-router-dom";
-import { config } from '../config/env';
+import { config } from "../config/env";
+import AppLogo from "./AppLogo";
 
 type HeaderProps = {
   isSmallScreen?: boolean;
@@ -33,7 +34,6 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
     useState<LocationOption | null>(null);
   const [showSearchBar, setShowSearchBar] = useState(false);
 
-  const appName = config.APP_NAME;
   const appVersion = config.APP_VERSION;
   const appDescription = config.APP_DESCRIPTION;
   const appOrg = config.APP_ORGANIZATION;
@@ -144,38 +144,16 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
           </IconButton>
         )}
         <Stack direction="row" alignItems="center" spacing={1}>
-          {config.APP_ORGANIZATION === "2fts" ? (
+          {config.APP_ORGANIZATION === "2fts" && (
             <Box
               component="img"
               src={`${config.BASE_URL}2fts-crest.png`}
               alt="2FTS Crest"
               sx={{ height: "80px", marginRight: "5px", py: 1 }}
             />
-          ) : (
-          <Box
-            component="img"
-            src={`${config.BASE_URL}logo.svg`}
-            alt="Logo"
-            sx={{ height: "40px", marginRight: "10px" }}
-          />)}
+          )}
           <Stack spacing={0} alignItems="flex-start">
-            <Typography
-              component={Link}
-              to={`${config.BASE_URL}`}
-              variant={isSmallScreen ? "subtitle1" : "h6"}
-              sx={{
-              textTransform: "uppercase",
-              fontWeight: "bold",
-              lineHeight: 1.1,
-              textDecoration: "none",
-              color: "inherit",
-              '&:hover': {
-                textDecoration: 'none',
-                color: 'inherit',
-              },
-              }}>
-              {appName}
-            </Typography>
+            <AppLogo />
             <Typography
               variant="caption"
               sx={isSmallScreen ? { fontSize: "0.6rem" } : { lineHeight: 1.1 }}>
@@ -190,8 +168,7 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
               size="small"
               sx={{ ml: "auto" }}
               onClick={() => setShowSearchBar(!showSearchBar)}
-              aria-label="toggle search"
-            >
+              aria-label="toggle search">
               <SearchIcon />
             </IconButton>
             <IconButton
@@ -200,8 +177,7 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
               size="small"
               color="inherit"
               sx={{ ml: 1 }}
-              aria-label="help"
-            >
+              aria-label="help">
               <HelpIcon />
             </IconButton>
           </>

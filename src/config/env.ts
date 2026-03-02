@@ -27,7 +27,7 @@ const getDeploymentConfig = () => {
   return {
     APP_NAME: "Strop Drop",
     BASE_URL: "",
-    APP_ORGANIZATION: "2fts",
+    APP_ORGANIZATION: "",
   };
 };
 

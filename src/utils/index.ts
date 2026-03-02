@@ -5,3 +5,4 @@ export * from "./calculate-strop-drift";
 export * from "./calculate-drift-coordinates";
 export * from "./calculate-average-direction";
 export * from "./calculate-wind-components";
+export * from "./launch-profile";
