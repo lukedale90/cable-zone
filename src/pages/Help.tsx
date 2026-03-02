@@ -281,6 +281,11 @@ const HelpPage = () => {
                 src={`${config.BASE_URL}launch.webm`}
                 autoPlay
                 loop
+                muted
+                playsInline
+                preload="auto"
+                controls={false}
+                {...({ "webkit-playsinline": "true" } as any)}
                 sx={{
                   width: { xs: "100%", lg: "50%" },
                   height: "auto",
@@ -294,6 +299,10 @@ const HelpPage = () => {
                   controls={false}
                   autoPlay
                   loop
+                  muted
+                  playsInline
+                  preload="auto"
+                  {...({ "webkit-playsinline": "true" } as any)}
                   sx={{
                     width: "100%",
                     height: "auto",
@@ -305,6 +314,10 @@ const HelpPage = () => {
                   controls={false}
                   autoPlay
                   loop
+                  muted
+                  playsInline
+                  preload="auto"
+                  {...({ "webkit-playsinline": "true" } as any)}
                   sx={{
                     width: "100%",
                     height: "auto",
