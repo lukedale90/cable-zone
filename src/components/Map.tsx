@@ -151,6 +151,7 @@ const Map = () => {
       parameters.releaseHeight,
       parameters.surfaceWind.speed,
       parameters.customLaunchProfile,
+      parameters.twoThousandFtWind.speed,
     );
 
     // const distanceLabels = stropHeights.slice(1); //remove first in the array - don't care about zero

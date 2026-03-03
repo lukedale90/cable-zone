@@ -25,7 +25,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import { calculateTerminalVelocity } from "../utils/calculate-strop-drift";
 import LaunchProfileControl from "./LaunchProfileControl";
 import SavedScenarios from "./savedScenarios";
-import { config } from '../config/env';
+import { config } from "../config/env";
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -84,7 +84,9 @@ const SettingsPanel = () => {
               direction="row"
               justifyContent="space-between"
               alignItems="center">
-              <Typography variant="caption">Expected Full Launch Height</Typography>
+              <Typography variant="caption">
+                Expected Full Launch Height
+              </Typography>
               {parameters.releaseHeight > parameters.theroreticalMaxHeight ? (
                 <Tooltip
                   title={`Warning: The release height exceeds the theoretical maximum of ${parameters.theroreticalMaxHeight}ft based on the cable length and headwind component.`}>
@@ -97,7 +99,7 @@ const SettingsPanel = () => {
               ) : (
                 <Chip
                   label={`${parameters.releaseHeight} ft`}
-                  color="primary"
+                  color="default"
                 />
               )}
             </Stack>
@@ -109,6 +111,7 @@ const SettingsPanel = () => {
               min={100}
               max={3000}
               step={100}
+              color="info"
               valueLabelDisplay="auto"
             />
             <Stack
@@ -134,8 +137,33 @@ const SettingsPanel = () => {
               step={1}
               valueLabelDisplay="auto"
             />
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center">
+              <Typography variant="caption">2000ft Wind Speed</Typography>
+              <Chip
+                label={`${parameters.twoThousandFtWind.speed} kts`}
+                color="error"
+              />
+            </Stack>
+            <Slider
+              value={parameters.twoThousandFtWind.speed}
+              onChange={(_, value) =>
+                handleChange("twoThousandFtWind", {
+                  ...parameters.twoThousandFtWind,
+                  speed: value as number,
+                })
+              }
+              min={1}
+              max={50}
+              step={1}
+              color="error"
+              valueLabelDisplay="auto"
+            />
             <LaunchProfileControl
               activeWind={parameters.surfaceWind.speed}
+              twoKWind={parameters.twoThousandFtWind.speed}
               maxHeight={parameters.releaseHeight}
               maxCableLength={parameters.cableLength}
             />

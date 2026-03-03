@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { launchProfile } from "../utils/launch-profile";
+import { generateDynamicLaunchProfile } from "../utils/launch-profile";
 import Slider from "@mui/material/Slider";
 import { Alert, Button, Chip, Stack, Typography } from "@mui/material";
 import { useParameters } from "../context/ParametersContext";
@@ -7,19 +7,31 @@ import { config } from '../config/env';
 
 const LaunchProfileControl = ({
   activeWind,
+  twoKWind,
   maxHeight,
   maxCableLength,
 }: {
   activeWind: number;
+  twoKWind: number;
   maxHeight: number;
   maxCableLength: number;
 }) => {
   const [customProfileData, setCustomProfileData] = useState<number[]>([]);
-  const [profileKey, setProfileKey] = useState<number>(0);
   const [editMode, setEditMode] = useState<boolean>(false);
   const { parameters, setParameters } = useParameters();
 
   const appOrganization = config.APP_ORGANIZATION;
+
+  const dynamicProfile = generateDynamicLaunchProfile(
+      activeWind,
+      twoKWind
+    );
+
+  const holding = {
+    title: `Dynamic (${activeWind} kt surface, ${twoKWind} kt at 2000ft)`,
+    data: dynamicProfile,
+  }
+  
 
   const handleSliderChange = (dataIndex: number, value: number) => {
     const dataArray = [];
@@ -28,7 +40,7 @@ const LaunchProfileControl = ({
       if (customProfileData[i] !== undefined) {
         setValue = customProfileData[i];
       } else {
-        setValue = launchProfile[profileKey].data[i];
+        setValue = holding.data[i];
       }
 
       if (i === dataIndex) {
@@ -53,21 +65,7 @@ const LaunchProfileControl = ({
       ...prev,
       customLaunchProfile: customProfileData,
     }));
-  }, [customProfileData, setParameters]);
-
-  useEffect(() => {
-    // Update profileKey when activeWind changes
-    let closestKey = 0;
-    for (let i = 1; i < launchProfile.length; i++) {
-      if (
-        Math.abs(launchProfile[i].wind - activeWind) <
-        Math.abs(launchProfile[closestKey].wind - activeWind)
-      ) {
-        closestKey = i;
-      }
-    }
-    setProfileKey(closestKey);
-  }, [activeWind, setParameters]);
+  }, [customProfileData, setParameters, editMode]);
 
   const closestProfile =
     parameters.customLaunchProfile &&
@@ -77,7 +75,7 @@ const LaunchProfileControl = ({
           title: "Custom Profile",
           data: parameters.customLaunchProfile,
         }
-      : launchProfile[profileKey];
+      : holding;
 
   return (
     <div style={{ maxWidth: "100%", overflowX: "auto", marginTop: 16 }}>
@@ -120,15 +118,18 @@ const LaunchProfileControl = ({
         </Stack>
         {appOrganization !== "2fts" && (
           <>
-            <Alert severity="info">
-              Adjust the sliders to customise the launch profile. The profile
-              will override preset profiles when in edit mode.
-            </Alert>
+            {editMode && (
+              <Alert severity="info">
+                Adjust the sliders to customise the launch profile. The profile
+                will override the dynamic calculation when in edit mode.
+              </Alert>
+            )}
             <Button
               sx={{ width: "100%" }}
               variant={editMode ? "contained" : "outlined"}
+              color={editMode ? "primary" : "error"}
               onClick={handleEditModeToggle}>
-              {editMode ? "Use Presets?" : "Custom Override?"}
+              {editMode ? "Dynamic Profile" : "Custom Override?"}
             </Button>
           </>
         )}
