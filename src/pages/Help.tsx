@@ -22,10 +22,9 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   calculateStropHeights,
   calculateWindGradient,
-  launchProfile,
   generateDynamicLaunchProfile,
 } from "../utils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -60,21 +59,6 @@ const HelpPage = () => {
     direction: number;
   }>({ speed: 20, direction: 290 });
   const [launchHeight, setLaunchHeight] = useState<number>(2000);
-//   const [windProfile, setWindProfile] = useState<number>(0);
-
-//   useEffect(() => {
-//     let closestKey = 0;
-//     for (let i = 1; i < launchProfile.length; i++) {
-//       if (
-//         Math.abs(launchProfile[i].wind - surfaceWind.speed) <
-//         Math.abs(launchProfile[closestKey].wind - surfaceWind.speed)
-//       ) {
-//         closestKey = i;
-//       }
-//     }
-
-//     setWindProfile(closestKey);
-//   }, [launchProfile, surfaceWind.speed]);
 
   const stropHeights = calculateStropHeights(
     1000,
