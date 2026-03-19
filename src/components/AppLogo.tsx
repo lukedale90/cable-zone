@@ -10,7 +10,7 @@ export default function AppLogo() {
     <Box
       component={Link}
       to={config.BASE_URL}
-      sx={{ textDecoration: "none", color: "inherit", "&:hover": { color: (theme) => theme.palette.warning.main } }}>
+      sx={{ textDecoration: "none", color: "inherit", "&:hover": { color: (theme) => theme.palette.grey[400] } }}>
       <Stack direction="row" alignItems="center">
         <Typography
           variant={isSmallScreen ? "subtitle1" : "h6"}
@@ -29,9 +29,9 @@ export default function AppLogo() {
         </Typography>
         <Box
           component="img"
-          src={`${config.BASE_URL}logo.svg`}
+          src={`${config.BASE_URL}weaklink-icon.svg`}
           alt="Logo"
-          sx={{ height: "2em", mx: 0.25, opacity: 0.6 }}
+          sx={{ height: "2em", mx: 0.25 }}
         />
         <Typography
           variant={isSmallScreen ? "subtitle1" : "h6"}

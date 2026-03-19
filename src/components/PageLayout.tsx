@@ -15,7 +15,7 @@ const PageLayout = ({ title, subtitle, children, maxWidth = "xl" }: PageLayoutPr
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", width: "100%" }}>
       <AppBar />
       <Container maxWidth={maxWidth} sx={{ py: 4, flex: 1 }}>
-        <Paper elevation={1} sx={{ p: 4 }}>
+        <Paper elevation={0} sx={{ p: { xs: 1, md: 4 } }}>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h3" component="h1" gutterBottom>
               {title}

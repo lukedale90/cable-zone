@@ -2,7 +2,6 @@ import React from "react";
 import {
   AppBar as MuiAppBar,
   Toolbar,
-  Typography,
   Stack,
   Box,
   Button,
@@ -16,14 +15,12 @@ import AppLogo from "./AppLogo";
 
 
 const AppBar: React.FC = () => {
-  const appVersion = config.APP_VERSION;
-  const appDescription = config.APP_DESCRIPTION;
   const appOrg = config.APP_ORGANIZATION;
 
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
 
   return (
-    <MuiAppBar position="static">
+    <MuiAppBar position="sticky" sx={{ backgroundColor: (theme) => theme.palette.grey[900], boxShadow: 1 }}>
       <Toolbar>
         <Stack direction="row" alignItems="center" spacing={1}>
           {appOrg === "2fts" && (
@@ -36,11 +33,6 @@ const AppBar: React.FC = () => {
           )}
           <Stack spacing={0} alignItems="flex-start">
             <AppLogo />
-            <Typography
-              variant="caption"
-              sx={isSmallScreen ? { fontSize: "0.6rem" } : { lineHeight: 1.1 }}>
-              {appDescription} v{appVersion}
-            </Typography>
           </Stack>
         </Stack>
         {/* back to app button */}

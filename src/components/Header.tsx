@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
-  Typography,
   IconButton,
   Stack,
   TextField,
@@ -34,8 +33,6 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
     useState<LocationOption | null>(null);
   const [showSearchBar, setShowSearchBar] = useState(false);
 
-  const appVersion = config.APP_VERSION;
-  const appDescription = config.APP_DESCRIPTION;
   const appOrg = config.APP_ORGANIZATION;
 
   //filter the location options to just 2FTS if the organisation is 2fts
@@ -131,7 +128,7 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
   );
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky" sx={{ backgroundColor: (theme) => theme.palette.grey[900], boxShadow: 10 }}>
       <Toolbar>
         {isSmallScreen && toggleDrawer && (
           <IconButton
@@ -154,11 +151,6 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
           )}
           <Stack spacing={0} alignItems="flex-start">
             <AppLogo />
-            <Typography
-              variant="caption"
-              sx={isSmallScreen ? { fontSize: "0.6rem" } : { lineHeight: 1.1 }}>
-              {appDescription} v{appVersion}
-            </Typography>
           </Stack>
         </Stack>
         {isSmallScreen ? (
@@ -200,7 +192,7 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
               variant="contained"
               color="info"
               sx={{ ml: 2 }}>
-              <HelpIcon />
+              <HelpIcon sx={{ color: "white" }} />
             </Button>
           </Stack>
         )}
