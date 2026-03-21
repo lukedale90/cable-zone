@@ -16,7 +16,10 @@ body {
   width: 100%;
 }
 
-input, select, textarea, button {
+input,
+select,
+textarea,
+button {
   font-size: 16px !important;
 }
 
@@ -27,4 +30,42 @@ input, select, textarea, button {
 
 .MuiButtonBase-root:focus {
   outline: none;
+}
+
+.geolocation-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: #f8f9fa;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #495057;
+  transition: all 0.2s ease;
+}
+.geolocation-btn:hover {
+  background: #e9ecef;
+  color: #212529;
+}
+.geolocation-btn:active {
+  background: #dee2e6;
+  transform: scale(0.95);
+}
+.geolocation-btn.locating {
+  background: #007bff;
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -32,7 +32,6 @@ type Coordinate = {
   lng: number;
 };
 
-
 const UpdateMapView = ({ center }: { center: LatLngExpression }) => {
   const map = useMap();
 
@@ -54,6 +53,199 @@ const UpdateMapView = ({ center }: { center: LatLngExpression }) => {
   }, [center, map]);
 
   return null;
+};
+
+const GeolocationControl = () => {
+  const map = useMap();
+  const { setParameters } = useParameters();
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+
+  useEffect(() => {
+    // Create geolocation control
+    const GeolocationControlClass = L.Control.extend({
+      options: {
+        position: "topleft",
+      },
+
+      onAdd: function () {
+        const div = L.DomUtil.create("div", "leaflet-control-geolocation");
+        div.innerHTML = `
+          <div style="
+            background: white; 
+            border-radius: 4px; 
+            padding: 5px; 
+            box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <button class="geolocation-btn" style="
+              border: none;
+              background: none;
+              padding: 0;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              width: 24px;
+              height: 24px;
+            " title="Show my location">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <line x1="12" y1="1" x2="12" y2="5"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="1" y1="12" x2="5" y2="12"/>
+          <line x1="19" y1="12" x2="23" y2="12"/>
+              </svg>
+            </button>
+          </div>
+        `;
+
+        // Prevent map interaction when clicking button
+        L.DomEvent.disableClickPropagation(div);
+
+        // Add event listener
+        div.addEventListener("click", () => {
+          getCurrentLocation();
+        });
+
+        return div;
+      },
+    });
+
+    const geolocationControl = new GeolocationControlClass();
+    geolocationControl.addTo(map);
+
+    return () => {
+      map.removeControl(geolocationControl);
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map]);
+
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by this browser.");
+      return;
+    }
+
+    // Check if we're on HTTP (not HTTPS) and warn user
+    if (location.protocol !== "https:" && location.hostname !== "localhost") {
+      alert(
+        "Geolocation requires HTTPS. Please use: https://" +
+          location.host +
+          location.pathname,
+      );
+      return;
+    }
+
+    const btn = document.querySelector(".geolocation-btn");
+    btn?.classList.add("locating");
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const newLocation = { lat: latitude, lng: longitude };
+
+        setUserLocation(newLocation);
+
+        // Center map on user location
+        map.setView([latitude, longitude], Math.max(map.getZoom(), 15));
+
+        // Update parameters to center view
+        setParameters((prev) => ({
+          ...prev,
+          viewLocation: newLocation,
+          zoomLevel: Math.max(map.getZoom(), 15),
+        }));
+
+        btn?.classList.remove("locating");
+      },
+      (error) => {
+        console.error("Error getting location:", error);
+        let message = "Unable to get your location.";
+
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            if (
+              location.protocol !== "https:" &&
+              location.hostname !== "localhost"
+            ) {
+              message =
+                "Location access requires HTTPS. Please use: https://" +
+                location.host +
+                location.pathname;
+            } else {
+              message =
+                "Location access denied. Please allow location access in your browser settings and try again.";
+            }
+            break;
+          case error.POSITION_UNAVAILABLE:
+            message =
+              "Location information unavailable. Please check your GPS/location services are enabled.";
+            break;
+          case error.TIMEOUT:
+            message = "Location request timed out. Please try again.";
+            break;
+        }
+
+        alert(message);
+        btn?.classList.remove("locating");
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000, // 5 minutes
+      },
+    );
+  };
+
+  return (
+    <>
+      {userLocation && (
+        <Marker
+          position={[userLocation.lat, userLocation.lng]}
+          icon={L.divIcon({
+            className: "user-location-marker",
+            html: `
+              <div style="
+                width: 20px;
+                height: 20px;
+                background: #007bff;
+                border: 3px solid white;
+                border-radius: 50%;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                position: relative;
+              ">
+                <div style="
+                  width: 40px;
+                  height: 40px;
+                  background: rgba(0,123,255,0.2);
+                  border-radius: 50%;
+                  position: absolute;
+                  top: -10px;
+                  left: -10px;
+                  animation: locationPulse 2s infinite;
+                "></div>
+              </div>
+              <style>
+                @keyframes locationPulse {
+                  0% { transform: scale(0.5); opacity: 1; }
+                  100% { transform: scale(2); opacity: 0; }
+                }
+              </style>
+            `,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10],
+          })}
+        />
+      )}
+    </>
+  );
 };
 
 const Map = () => {
@@ -143,7 +335,7 @@ const Map = () => {
     );
 
     if (distance > 5000) {
-      alert('Alight mate? Launching to the moon are we?');
+      alert("Alight mate? Launching to the moon are we?");
     }
 
     const stropHeights = calculateStropHeights(
@@ -358,6 +550,7 @@ const Map = () => {
         style={{ height: "100%", width: "100%" }}>
         <UpdateMapView center={view} />
         <MapEventHandler setParameters={setParameters} />
+        <GeolocationControl />
 
         <TileLayer
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
