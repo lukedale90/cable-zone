@@ -16,7 +16,7 @@ import {
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import LandscapeIcon from "@mui/icons-material/Landscape";
+import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import DownloadIcon from "@mui/icons-material/Download";
 import UploadIcon from "@mui/icons-material/Upload";
 
@@ -151,7 +151,7 @@ const SavedScenarios = () => {
               justifyContent: "space-between",
               borderBottom: "1px solid #eee",
             }}>
-            <LandscapeIcon sx={{ mr: 2, opacity: 0.5 }} />
+            <TravelExploreIcon sx={{ mr: 2, opacity: 0.5 }} />
             <ListItemText primary={scenario.name} />
             <Stack spacing={2} direction="row">
               <Tooltip title="Load scenario">

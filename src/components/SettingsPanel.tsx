@@ -51,6 +51,19 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
   },
 }));
 
+const MobileOptimizedSlider = styled(Slider)({
+  '& .MuiSlider-thumb': {
+    width: 28,
+    height: 28,
+  },
+  '& .MuiSlider-track': {
+    height: 8,
+  },
+  '& .MuiSlider-rail': {
+    height: 8,
+  },
+});
+
 const SettingsPanel = () => {
   const { parameters, setParameters, resetStropParameters } = useParameters();
 
@@ -103,9 +116,12 @@ const SettingsPanel = () => {
                 />
               )}
             </Stack>
-            <Slider
+            <MobileOptimizedSlider
               value={parameters.releaseHeight}
               onChange={(_, value) =>
+                handleChange("releaseHeight", value as number)
+              }
+              onChangeCommitted={(_, value) =>
                 handleChange("releaseHeight", value as number)
               }
               min={100}
@@ -124,9 +140,15 @@ const SettingsPanel = () => {
                 color="primary"
               />
             </Stack>
-            <Slider
+            <MobileOptimizedSlider
               value={parameters.surfaceWind.speed}
               onChange={(_, value) =>
+                handleChange("surfaceWind", {
+                  ...parameters.surfaceWind,
+                  speed: value as number,
+                })
+              }
+              onChangeCommitted={(_, value) =>
                 handleChange("surfaceWind", {
                   ...parameters.surfaceWind,
                   speed: value as number,
@@ -147,9 +169,15 @@ const SettingsPanel = () => {
                 color="error"
               />
             </Stack>
-            <Slider
+            <MobileOptimizedSlider
               value={parameters.twoThousandFtWind.speed}
               onChange={(_, value) =>
+                handleChange("twoThousandFtWind", {
+                  ...parameters.twoThousandFtWind,
+                  speed: value as number,
+                })
+              }
+              onChangeCommitted={(_, value) =>
                 handleChange("twoThousandFtWind", {
                   ...parameters.twoThousandFtWind,
                   speed: value as number,
@@ -190,9 +218,15 @@ const SettingsPanel = () => {
                 />
               </Stack>
               <Stack flexGrow={1}>
-                <Slider
+                <MobileOptimizedSlider
                   value={parameters.surfaceWind.direction}
                   onChange={(_, value) =>
+                    handleChange("surfaceWind", {
+                      ...parameters.surfaceWind,
+                      direction: value as number,
+                    })
+                  }
+                  onChangeCommitted={(_, value) =>
                     handleChange("surfaceWind", {
                       ...parameters.surfaceWind,
                       direction: value as number,
@@ -204,9 +238,15 @@ const SettingsPanel = () => {
                   valueLabelDisplay="auto"
                   valueLabelFormat={(value) => `${value}°`}
                 />
-                <Slider
+                <MobileOptimizedSlider
                   value={parameters.surfaceWind.speed}
                   onChange={(_, value) =>
+                    handleChange("surfaceWind", {
+                      ...parameters.surfaceWind,
+                      speed: value as number,
+                    })
+                  }
+                  onChangeCommitted={(_, value) =>
                     handleChange("surfaceWind", {
                       ...parameters.surfaceWind,
                       speed: value as number,
@@ -232,10 +272,16 @@ const SettingsPanel = () => {
                 />
               </Stack>
               <Stack flexGrow={1}>
-                <Slider
+                <MobileOptimizedSlider
                   color="error"
                   value={parameters.twoThousandFtWind.direction}
                   onChange={(_, value) =>
+                    handleChange("twoThousandFtWind", {
+                      ...parameters.twoThousandFtWind,
+                      direction: value as number,
+                    })
+                  }
+                  onChangeCommitted={(_, value) =>
                     handleChange("twoThousandFtWind", {
                       ...parameters.twoThousandFtWind,
                       direction: value as number,
@@ -247,10 +293,16 @@ const SettingsPanel = () => {
                   valueLabelDisplay="auto"
                   valueLabelFormat={(value) => `${value}°`}
                 />
-                <Slider
+                <MobileOptimizedSlider
                   color="error"
                   value={parameters.twoThousandFtWind.speed}
                   onChange={(_, value) =>
+                    handleChange("twoThousandFtWind", {
+                      ...parameters.twoThousandFtWind,
+                      speed: value as number,
+                    })
+                  }
+                  onChangeCommitted={(_, value) =>
                     handleChange("twoThousandFtWind", {
                       ...parameters.twoThousandFtWind,
                       speed: value as number,
@@ -284,9 +336,12 @@ const SettingsPanel = () => {
                   <Typography variant="caption">Strop Length</Typography>
                   <Chip label={`${parameters.stropLength} m`} color="primary" />
                 </Stack>
-                <Slider
+                <MobileOptimizedSlider
                   value={parameters.stropLength}
                   onChange={(_, value) =>
+                    handleChange("stropLength", value as number)
+                  }
+                  onChangeCommitted={(_, value) =>
                     handleChange("stropLength", value as number)
                   }
                   min={1}
@@ -304,9 +359,12 @@ const SettingsPanel = () => {
                     color="primary"
                   />
                 </Stack>
-                <Slider
+                <MobileOptimizedSlider
                   value={parameters.stropDiameter * 100}
                   onChange={(_, value) =>
+                    handleChange("stropDiameter", (value as number) / 100)
+                  }
+                  onChangeCommitted={(_, value) =>
                     handleChange("stropDiameter", (value as number) / 100)
                   }
                   min={1}
@@ -324,9 +382,12 @@ const SettingsPanel = () => {
                     color="primary"
                   />
                 </Stack>
-                <Slider
+                <MobileOptimizedSlider
                   value={parameters.stropWeight}
                   onChange={(_, value) =>
+                    handleChange("stropWeight", value as number)
+                  }
+                  onChangeCommitted={(_, value) =>
                     handleChange("stropWeight", value as number)
                   }
                   min={1}
@@ -374,9 +435,12 @@ const SettingsPanel = () => {
                     color="primary"
                   />
                 </Stack>
-                <Slider
+                <MobileOptimizedSlider
                   value={parameters.safetyBuffer}
                   onChange={(_, value) =>
+                    handleChange("safetyBuffer", value as number)
+                  }
+                  onChangeCommitted={(_, value) =>
                     handleChange("safetyBuffer", value as number)
                   }
                   min={1}

@@ -277,7 +277,7 @@ const Map = () => {
 
     //setRWYHeading(brng);
     setParameters((prev) => ({ ...prev, RWYHeading: brng }));
-  }, [parameters.winchLocation, parameters.launchPoint]);
+  }, [parameters, setParameters]);
 
   useEffect(() => {
     //update theoretical max height
@@ -305,6 +305,8 @@ const Map = () => {
     parameters.cableLength,
     parameters.surfaceWind,
     parameters.twoThousandFtWind,
+    parameters.RWYHeading,
+    averageDirection,
     setParameters,
   ]);
 

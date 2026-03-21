@@ -24,3 +24,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Manifest is dynamically produced when the app is built
+public/manifest.json
