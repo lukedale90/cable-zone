@@ -1,17 +1,11 @@
-import { defineConfig, loadEnv } from "vite";
-import react from "@vitejs/plugin-react";
-import { writeFileSync } from 'fs';
-import { resolve } from 'path';
+import { config } from '../config/env';
 
-// https://vite.dev/config/
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
-  const baseUrl = env.VITE_BASE_URL || "/cable-zone/";
+export const generateManifest = () => {
+  const baseUrl = config.BASE_URL || '/cable-zone/';
   
-  // Generate manifest.json with correct base URL
-  const manifest = {
+  return {
     name: "Strop Drop Visualiser",
-    short_name: "Strop Drop", 
+    short_name: "Strop Drop",
     description: "Calculate and visualize strop drop zones for glider winch launches",
     start_url: baseUrl,
     display: "standalone",
@@ -28,14 +22,14 @@ export default defineConfig(({ mode }) => {
       },
       {
         src: `${baseUrl}icon-192.png`,
-        sizes: "192x192", 
+        sizes: "192x192",
         type: "image/png",
         purpose: "any"
       },
       {
         src: `${baseUrl}icon-512.png`,
         sizes: "512x512",
-        type: "image/png", 
+        type: "image/png",
         purpose: "any"
       },
       {
@@ -48,19 +42,4 @@ export default defineConfig(({ mode }) => {
     categories: ["productivity", "utilities"],
     screenshots: []
   };
-
-  // Write manifest to public folder
-  writeFileSync(
-    resolve(process.cwd(), 'public/manifest.json'),
-    JSON.stringify(manifest, null, 2)
-  );
-
-  return {
-    base: baseUrl,
-    plugins: [react()],
-    server: {
-      host: true, // Allow network access for mobile testing
-      port: 5173,
-    },
-  };
-});
+};
