@@ -8,5 +8,9 @@ export default defineConfig(({ mode }) => {
   return {
     base: env.VITE_BASE_URL || "/cable-zone/", // Use env var or default
     plugins: [react()],
+    server: {
+      host: true, // Allow network access for mobile testing
+      port: 5173,
+    },
   };
 });

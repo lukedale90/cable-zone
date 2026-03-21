@@ -146,7 +146,7 @@ const Header: React.FC<HeaderProps> = ({ isSmallScreen, toggleDrawer }) => {
               component="img"
               src={`${config.BASE_URL}2fts-crest.png`}
               alt="2FTS Crest"
-              sx={{ height: "80px", marginRight: "5px", py: 1 }}
+              sx={{ height: "2.75em", marginRight: "5px" }}
             />
           )}
           <Stack spacing={0} alignItems="flex-start">

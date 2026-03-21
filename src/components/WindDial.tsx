@@ -24,16 +24,6 @@ ChartJS.register(
   ChartTooltip,
   Legend,
 );
-// interface WindDialContainerProps {
-//   surfaceWind: {
-//     speed: number;
-//     direction: number;
-//   };
-//   twoThousandFtWind: {
-//     speed: number;
-//     direction: number;
-//   };
-// }
 
 interface WindDialProps {
   direction: number;
@@ -63,7 +53,7 @@ const RWYDial: React.FC<RWYDialProps> = ({ direction, size = 40 }) => {
         y1={height * 0.1}
         x2={centerX}
         y2={height * 0.9}
-        stroke="#00000050"
+        stroke="#00000067"
         strokeWidth={strokeWidth}
       />
       <line
@@ -72,6 +62,7 @@ const RWYDial: React.FC<RWYDialProps> = ({ direction, size = 40 }) => {
         x2={centerX}
         y2={height * 0.875}
         stroke="#ffffff65"
+        strokeDasharray="4"
         strokeWidth={innerStrokeWidth}
       />
     </svg>
@@ -82,7 +73,7 @@ const WindDial: React.FC<WindDialProps> = ({ direction, color, size = 40 }) => {
   const height = size * 2; // Maintain 1:2 aspect ratio
   const centerX = size / 2;
   const strokeWidth = size / 13;
-  const arrowSize = size / 10;
+  const arrowSize = size / 7;
 
   return (
     <svg
@@ -190,8 +181,9 @@ const LaunchProfileMiniChart: React.FC<{
       },
       y: {
         display: false,
-        beginAtZero: true,
-        max: 1,
+        beginAtZero: false,
+        min: -0.05,
+        max: 1.15,
         grid: {
           display: false,
         },
@@ -211,18 +203,177 @@ const LaunchProfileMiniChart: React.FC<{
         height: height,
         // sky-like vertical gradient
         backgroundImage:
-          "linear-gradient(180deg, #61b9e2ff 0%, #81d4fa 45%, #e1f5fe 100%)",
+          "linear-gradient(180deg, #4496d9ff 0%, #50b7eeff 45%, #a2ddf9ff 100%)",
         borderRadius: "6px 6px 0 0",
         borderBottom: "6px solid rgba(50, 100, 6, 1)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: 0,
+        position: "relative",
+        overflow: "hidden",
       }}>
-      <div style={{ width: "100%", height: "100%" }}>
+      <div
+        style={{
+          position: "absolute",
+          top: "15%",
+          left: "-10%",
+          width: "18px",
+          height: "10px",
+          backgroundColor: "rgba(255, 255, 255, 0.4)",
+          borderRadius: "10px",
+          zIndex: 1,
+          boxShadow: `
+            10px 1px 0px -1px rgba(255, 255, 255, 0.3),
+            6px -4px 0px -1px rgba(255, 255, 255, 0.3)
+          `,
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: "35%",
+          right: "5%",
+          width: "15px",
+          height: "10px",
+          backgroundColor: "rgba(255, 255, 255, 0.4)",
+          borderRadius: "10px",
+          zIndex: 1,
+          boxShadow: `
+            10px 1px 0px -1px rgba(255, 255, 255, 0.3),
+            6px -4px 0px -1px rgba(255, 255, 255, 0.3)
+          `,
+        }}
+      />
+      <div style={{ width: "100%", height: "100%", zIndex: 2, position: "relative" }}>
         <Line data={chartData} options={options} />
       </div>
     </div>
+  );
+};
+
+const CompassRose: React.FC<{ size?: number, isSmallScreen?: boolean }> = ({ size = 40, isSmallScreen }) => {
+  const SCALE_FACTOR = 2.2; // Adjust this single value to make compass bigger/smaller
+  
+  const height = size * 2; // Maintain 1:2 aspect ratio - SAME as other dials
+  const centerX = size / 2;
+  const centerY = height / 2; // Center vertically in the same space as other dials
+  const radius = (size * 0.4) * SCALE_FACTOR; // Base radius scaled by factor
+  
+  // Generate tick marks and labels for compass
+  const majorTicks = [];
+  const minorTicks = [];
+  const labels = [];
+  
+  for (let i = 0; i < 360; i += 30) {
+    const angle = (i - 90) * (Math.PI / 180); // Rotate so 0° is at top
+    const outerRadius = radius * 0.95; // Extend ticks closer to edge
+    const innerRadius = radius * 0.7; // Longer tick marks
+    const labelRadius = radius * 1.15; // Move labels closer to center for readability
+    
+    const x1 = centerX + Math.cos(angle) * innerRadius;
+    const y1 = centerY + Math.sin(angle) * innerRadius;
+    const x2 = centerX + Math.cos(angle) * outerRadius;
+    const y2 = centerY + Math.sin(angle) * outerRadius;
+    
+    majorTicks.push(
+      <line
+        key={`major-${i}`}
+        x1={x1}
+        y1={y1}
+        x2={x2}
+        y2={y2}
+        stroke="rgba(0, 0, 0, 0.2)"
+        strokeWidth="1.2"
+      />
+    );
+    
+    // Add labels for cardinal directions
+    const labelX = centerX + Math.cos(angle) * labelRadius;
+    const labelY = centerY + Math.sin(angle) * labelRadius;
+    
+    if (i % 90 === 0) {
+      const label = i === 0 ? 'N' : i === 90 ? 'E' : i === 180 ? 'S' : 'W';
+      labels.push(
+        <text
+          key={`label-${i}`}
+          x={labelX}
+          y={labelY}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize={size / 5}
+          fill="rgba(0, 0, 0, 0.46)"
+          fontWeight="bold"
+        >
+          {label}
+        </text>
+      );
+    }
+  }
+  
+  // Minor tick marks every 10 degrees
+  for (let i = 0; i < 360; i += 10) {
+    if (i % 30 !== 0) { // Skip major tick positions
+      const angle = (i - 90) * (Math.PI / 180);
+      const outerRadius = radius * 0.95; // Match major tick outer radius
+      const innerRadius = radius * 0.85; // Longer minor ticks
+      
+      const x1 = centerX + Math.cos(angle) * innerRadius;
+      const y1 = centerY + Math.sin(angle) * innerRadius;
+      const x2 = centerX + Math.cos(angle) * outerRadius;
+      const y2 = centerY + Math.sin(angle) * outerRadius;
+      
+      minorTicks.push(
+        <line
+          key={`minor-${i}`}
+          x1={x1}
+          y1={y1}
+          x2={x2}
+          y2={y2}
+          stroke="rgba(0, 0, 0, 0.25)"
+          strokeWidth="0.5"
+        />
+      );
+    }
+  }
+  
+  return (
+    <svg
+      width={size}
+      height={height}
+      xmlns="http://www.w3.org/2000/svg"
+      overflow="visible"
+    >
+      {/* Outer compass ring */}
+      <circle
+        cx={centerX}
+        cy={centerY}
+        r={radius * 0.98} 
+        fill="rgba(255, 255, 255, 0)"
+        stroke="rgba(0, 0, 0, 0.2)"
+        strokeWidth="1.5"
+      />
+    
+      
+      {/* Tick marks */}
+      {isSmallScreen ? null : (
+        <>
+          {minorTicks}
+          {majorTicks}
+        </>
+      )}
+
+      {/* Labels */}
+      {labels}
+      
+      {/* Center dot */}
+      <circle
+        cx={centerX}
+        cy={centerY}
+        r="20"
+        fill="rgba(0, 0, 0, 0.12)"
+      />
+    </svg>
   );
 };
 
@@ -281,12 +432,24 @@ const WindDialContainer: React.FC = () => {
             width: isSmallScreen ? "150px" : "100%",
             // minWidth: isSmallScreen ? "100%" : "auto"
           }}>
+          {/* Compass Rose - Behind everything */}
           <div
             style={{
               position: "absolute",
               left: 0,
               right: 0,
               textAlign: "center",
+              zIndex: 0,
+            }}>
+            <CompassRose size={isSmallScreen ? 30 : 40} isSmallScreen={isSmallScreen} />
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              textAlign: "center",
+              zIndex: 1,
             }}>
             <RWYDial
               direction={parameters.RWYHeading}
@@ -299,6 +462,7 @@ const WindDialContainer: React.FC = () => {
               left: 0,
               right: 0,
               textAlign: "center",
+              zIndex: 2,
             }}>
             <WindDial
               direction={surfaceDirection}
@@ -312,6 +476,7 @@ const WindDialContainer: React.FC = () => {
               left: 0,
               right: 0,
               textAlign: "center",
+              zIndex: 3,
             }}>
             <WindDial
               direction={twoKDirection}
