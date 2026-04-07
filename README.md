@@ -125,8 +125,24 @@ npm run preview
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is available under a dual licensing structure:
+
+### Open Source License (MIT)
+For open source projects, educational use, and personal projects, this software is available under the MIT License. See the [LICENSE](LICENSE) file for full details.
+
+### Commercial License
+For commercial aviation operations, flight training organizations, or proprietary applications, a commercial license is available. This provides:
+- Extended liability coverage for aviation use
+- Priority support and custom features
+- Compliance with commercial aviation standards
+- Rights to modify and distribute without open source obligations
+
+See [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md) for pricing and terms, or contact LukeDale90@gmail.com for more information.
+
+### Which License Should I Choose?
+- **MIT License**: Free for open source projects, educational use, and personal applications
+- **Commercial License**: Required for commercial aviation operations or when incorporating into proprietary products
 
 ## Contact
 
-For questions or support, please contact: Luke.Dale828@mod.gov.uk
+For questions or support, please contact: LukeDale90@gmail.com

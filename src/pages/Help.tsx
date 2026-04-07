@@ -484,7 +484,7 @@ const HelpPage = () => {
 
       <Alert severity="info">
         If you need additional assistance or have questions not covered in this
-        help section, please contact Luke.Dale828@mod.gov.uk
+        help section, please contact LukeDale90@gmail.com
       </Alert>
     </PageLayout>
   );

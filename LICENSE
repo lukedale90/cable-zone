@@ -1,3 +1,11 @@
+# Dual License
+
+This software is available under two licensing options:
+
+## Option 1: MIT License (Open Source)
+
+For open source projects, educational use, and non-commercial purposes:
+
 MIT License
 
 Copyright (c) 2026 Luke Dale
@@ -19,3 +27,28 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## Option 2: Commercial License
+
+For commercial use, proprietary projects, or when you need:
+- Removal of attribution requirements
+- Warranty and support
+- Custom licensing terms
+- Integration into proprietary software
+
+Contact: [lukedale90@gmail.com] for commercial licensing terms.
+
+## Aviation Safety Notice
+
+This software is for educational and planning purposes only. It is NOT certified 
+for operational flight planning or safety-critical applications. Users assume 
+full responsibility for verifying calculations and ensuring compliance with 
+applicable aviation regulations.
+
+## License Selection
+
+By using this software, you agree to comply with the terms of your chosen license:
+- MIT License: Free for open source/educational use with attribution
+- Commercial License: Requires separate agreement for commercial use
+
+If you're unsure which license applies to your use case, please contact us.
